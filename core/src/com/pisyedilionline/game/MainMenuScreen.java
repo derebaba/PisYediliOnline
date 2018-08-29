@@ -1,7 +1,6 @@
 package com.pisyedilionline.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 
 public class MainMenuScreen extends BaseScreen {
 
@@ -16,15 +15,11 @@ public class MainMenuScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+        super.render(delta);
 
         game.batch.begin();
-        game.font.draw(game.batch, "Welcome to Drop!!! ", WORLD_WIDTH / 5, WORLD_HEIGHT / 10);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+        game.font.draw(game.batch, "Pis Yedili - 7", 10, 50);
+        game.font.draw(game.batch, "Baslamak için dokun", 10, 20);
         game.batch.end();
 
         if (Gdx.input.isTouched()) {

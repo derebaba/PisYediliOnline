@@ -1,7 +1,6 @@
 package com.pisyedilionline.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,14 +8,21 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameScreen extends BaseScreen {
 
-    private Texture cardSheet;
+    private Texture cardSheet, stackTexture;
 
     private Array<Card> cardDeck;
+    private Sprite stack;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
 
+        stackTexture = new Texture(Gdx.files.internal("regularBlue.jpg"));
+        stack = new Sprite(stackTexture);
+        stack.setPosition(43, 41);
+        stack.setSize(17, 24);
+
         loadCards();
+        cardDeck.shuffle();
     }
 
     @Override
@@ -26,25 +32,17 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0.2f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
+        super.render(delta);
 
         game.batch.begin();
-/*
+
         for (int i = 0; i < 10; i++)
         {
-            cardDeck.get(i).getSprite().setPosition(20 * i, 0);
-            cardDeck.get(i).getSprite().setSize(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f);
+            cardDeck.get(i).getSprite().setPosition(10 * i, 5);
+            cardDeck.get(i).getSprite().setSize(14, 19);
             cardDeck.get(i).getSprite().draw(game.batch);
         }
-*/
-        cardDeck.get(0).getSprite().setPosition(0, 0);
-        cardDeck.get(0).getSprite().setSize(WORLD_WIDTH, WORLD_HEIGHT);
-        cardDeck.get(0).getSprite().draw(game.batch);
-
+        stack.draw(game.batch);
         game.batch.end();
     }
 
@@ -64,8 +62,10 @@ public class GameScreen extends BaseScreen {
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
         cardSheet.dispose();
+        stackTexture.dispose();
     }
 
     private void loadCards() {
