@@ -3,6 +3,9 @@ package com.pisyedilionline.game;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Card extends Actor {
 
@@ -18,8 +21,21 @@ public class Card extends Actor {
     //Constructor for regular card
     public Card(Sprite sprite, Suit suit, int value) {
         this.cSprite = sprite;
+        cSprite.setSize(14, 19);
+
         this.cSuit = suit;
         this.value = value;
+
+        setTouchable(Touchable.enabled);
+        addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println(cSuit + " " + getValue());
+                //System.out.printf("%f, %f\n", x, y);
+                event.handle();//the Stage will stop trying to handle this event
+                return true; //the inputmultiplexer will stop trying to handle this touch
+            }
+        });
     }
 
     public int getValue() {
@@ -36,8 +52,12 @@ public class Card extends Actor {
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
-        batch.draw(cSprite, getX(), getY(), getOriginX(), getOriginY(),
-                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        cSprite.draw(batch);
     }
 
+    @Override
+    protected void positionChanged() {
+        cSprite.setPosition(getX(),getY());
+        super.positionChanged();
+    }
 }

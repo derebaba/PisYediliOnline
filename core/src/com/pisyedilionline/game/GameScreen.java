@@ -1,27 +1,47 @@
 package com.pisyedilionline.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
 public class GameScreen extends BaseScreen {
 
-    private Texture cardSheet, stackTexture;
+    private Texture cardSheet;
 
-    private Array<Card> cardDeck;
-    private Sprite stack;
+    private Array<Card> cardDeck, hand;
+    private CardStack cardStack;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
 
-        stackTexture = new Texture(Gdx.files.internal("regularBlue.jpg"));
-        stack = new Sprite(stackTexture);
-        stack.setPosition(43, 41);
-        stack.setSize(17, 24);
+        cardStack = new CardStack();
+        stage.addActor(cardStack);
+        cardStack.setPosition(40, 40);
+        cardStack.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                int i = hand.size;
+                Card card = cardDeck.pop();
+                stage.addActor(card);
+                hand.add(card);
+                card.setPosition(10 * i, 5);
+                cardDeck.get(i).setBounds(cardDeck.get(i).getX(),
+                        cardDeck.get(i).getY(),
+                        cardDeck.get(i).getSprite().getWidth(),
+                        cardDeck.get(i).getSprite().getHeight());
+                return true;
+            }
+        });
 
         loadCards();
+        hand = new Array<Card>();
         cardDeck.shuffle();
     }
 
@@ -36,13 +56,6 @@ public class GameScreen extends BaseScreen {
 
         game.batch.begin();
 
-        for (int i = 0; i < 10; i++)
-        {
-            cardDeck.get(i).getSprite().setPosition(10 * i, 5);
-            cardDeck.get(i).getSprite().setSize(14, 19);
-            cardDeck.get(i).getSprite().draw(game.batch);
-        }
-        stack.draw(game.batch);
         game.batch.end();
     }
 
@@ -64,10 +77,14 @@ public class GameScreen extends BaseScreen {
     @Override
     public void dispose()
     {
+        super.dispose();
         cardSheet.dispose();
-        stackTexture.dispose();
+        cardStack.getTexture().dispose();
     }
 
+    /**
+     * Load card sprites from image. Put cards in cardDeck array.
+     */
     private void loadCards() {
         TextureRegion region;
         Sprite cardSprite;

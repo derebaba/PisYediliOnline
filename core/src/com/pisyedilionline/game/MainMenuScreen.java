@@ -45,7 +45,6 @@ public class MainMenuScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-
+        super.dispose();
     }
-
 }
