@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public abstract class BaseScreen implements Screen {
 
-    static final int WORLD_WIDTH = 100;
-    static final int WORLD_HEIGHT = 100;
+    static final int WORLD_WIDTH = 160;
+    static final int WORLD_HEIGHT = 90;
 
     protected final PisYediliOnline game;
     protected OrthographicCamera camera;
@@ -28,7 +28,6 @@ public abstract class BaseScreen implements Screen {
         camera = new OrthographicCamera();
 
         stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera));
-        //viewport.apply();
 
         camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
 

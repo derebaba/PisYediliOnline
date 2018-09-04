@@ -7,32 +7,24 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class Card extends GenericCard {
+public class Card extends GenericCard implements Comparable<Card> {
 
     public enum Suit {
         HEARTS, SPADES, DIAMONDS, CLUBS
     }
 
     private Suit cSuit;
-
-    private int value;
+    private boolean selected;
+    private int value, order;
 
     //Constructor for regular card
-    public Card(Sprite sprite, Suit suit, int value) {
-        super(sprite);
+    public Card(Sprite sprite, Suit suit, int value, final GameScreen screen, int order) {
+        super(sprite, screen);
 
+        selected = false;
         this.cSuit = suit;
         this.value = value;
-
-        addListener(new ClickListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println(cSuit + " " + getValue());
-                //System.out.printf("%f, %f\n", x, y);
-                event.handle();//the Stage will stop trying to handle this event
-                return true; //the inputmultiplexer will stop trying to handle this touch
-            }
-        });
+        this.order = order;
     }
 
     public int getValue() {
@@ -41,5 +33,17 @@ public class Card extends GenericCard {
 
     public Suit getSuit() {
         return cSuit;
+    }
+
+    public boolean isSelected() { return selected; }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public int compareTo(Card c)
+    {
+        return c.order - this.order;
     }
 }

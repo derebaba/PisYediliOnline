@@ -11,10 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class GenericCard extends Actor {
 
     private Sprite sprite;
+    protected final GameScreen screen;
 
-    public GenericCard(Sprite sprite)
+    public GenericCard(Sprite sprite, final GameScreen screen)
     {
         this.sprite = sprite;
+        this.screen = screen;
 
         setSize(14, 19);
 

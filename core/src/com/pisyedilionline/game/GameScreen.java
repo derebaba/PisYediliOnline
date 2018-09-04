@@ -10,83 +10,70 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameScreen extends BaseScreen {
 
-    private Texture cardSheet, stackTexture;
-
     private Array<Card> cardDeck, hand;
     private GenericCard cardStack;
+    private Texture cardSheet, stackTexture;
+    private int turn = 0;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
 
-        stackTexture = new Texture(Gdx.files.internal("regularBlue.jpg"));
-        Sprite stackSprite = new Sprite(stackTexture);
-        cardStack = new GenericCard(stackSprite);
-        stage.addActor(cardStack);
-        cardStack.setPosition(40, 40);
-
-        loadCards();
-        hand = new Array<Card>();
+        //  Prepare all cards in the deck
+        cardSheet = new Texture(Gdx.files.internal("deck.png"));
+        cardDeck = loadCards();
         cardDeck.shuffle();
 
+        //  Prepare card stack to draw
+        stackTexture = new Texture(Gdx.files.internal("regularBlue.jpg"));
+        Sprite stackSprite = new Sprite(stackTexture);
+        cardStack = new GenericCard(stackSprite, this);
+        stage.addActor(cardStack);
+        cardStack.setPosition(60, 40);
         cardStack.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                int i = hand.size;
-                Card card = cardDeck.pop();
-                stage.addActor(card);
-                hand.add(card);
-                card.setPosition(10 * i, 5);
-                card.setBounds(card.getX(),
-                        card.getY(),
-                        card.getSprite().getWidth(),
-                        card.getSprite().getHeight());
+                drawCard();
+                event.handle();
                 return true;
             }
         });
 
+        hand = new Array<Card>();
     }
 
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void render(float delta) {
-        super.render(delta);
-
-        game.batch.begin();
-
-        game.batch.end();
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose()
+    private void sortCards()
     {
-        super.dispose();
-        cardSheet.dispose();
-        stackTexture.dispose();
+        hand.sort();
+        for (int i = 0; i < hand.size; i++)
+        {
+            hand.get(i).setZIndex(i);
+            hand.get(i).setPosition(20 + 10 * i, 5);
+            hand.get(i).setBounds(hand.get(i).getX(), hand.get(i).getY(),
+                    hand.get(i).getSprite().getWidth(), hand.get(i).getSprite().getHeight());
+        }
+    }
+
+    //  TODO: kendi sırası değilse false dönsün
+    public void drawCard()
+    {
+        Card card = cardDeck.pop();
+        stage.addActor(card);
+        hand.add(card);
+        sortCards();
+    }
+
+    public void playCard(Card card)
+    {
+        hand.removeValue(card, false);
+        card.setPosition(80, 40);
+        card.setZIndex(100 + turn++);   //  100 is arbitrary
+        card.clearListeners();
     }
 
     /**
-     * Load card sprites from image. Put cards in cardDeck array.
+     * Load card sprites from image. Assign card values and suits. Return card deck in an array.
      */
-    private void loadCards() {
+    private Array<Card> loadCards() {
         TextureRegion region;
         Sprite cardSprite;
 
@@ -105,8 +92,7 @@ public class GameScreen extends BaseScreen {
 
         Card.Suit suit;
 
-        cardSheet = new Texture(Gdx.files.internal("deck.png"));
-        cardDeck = new Array<Card>();
+        Array<Card> deck = new Array<Card>();
 
         for (int i = 0; i < 52; i++, yPos += height) {
             if (xPos == 140 && yPos == height * 3) {
@@ -148,8 +134,16 @@ public class GameScreen extends BaseScreen {
                 suit = Card.Suit.HEARTS;
             }
 
-            Card card = new Card(cardSprite, suit, value);
-            cardDeck.add(card);
+            Card card = new Card(cardSprite, suit, value, this,suitKey * 15 + valKey);
+            card.addListener(new ClickListener(){
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    playCard((Card) event.getTarget());
+                    event.handle();//the Stage will stop trying to handle this event
+                    return true; //the inputmultiplexer will stop trying to handle this touch
+                }
+            });
+            deck.add(card);
 
 
             //Moves to the next column of the sprite sheet after reaching the 10th row
@@ -158,7 +152,46 @@ public class GameScreen extends BaseScreen {
                 xPos += width;
             }
         }
-
+        return deck;
 
     }
+
+    @Override
+    public void show() {
+
+    }
+
+    @Override
+    public void render(float delta) {
+        super.render(delta);
+
+        game.batch.begin();
+
+        game.batch.end();
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose()
+    {
+        super.dispose();
+        cardSheet.dispose();
+        stackTexture.dispose();
+    }
+
+
 }
