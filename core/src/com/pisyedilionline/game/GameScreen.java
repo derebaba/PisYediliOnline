@@ -1,29 +1,33 @@
 package com.pisyedilionline.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
 public class GameScreen extends BaseScreen {
 
-    private Texture cardSheet;
+    private Texture cardSheet, stackTexture;
 
     private Array<Card> cardDeck, hand;
-    private CardStack cardStack;
+    private GenericCard cardStack;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
 
-        cardStack = new CardStack();
+        stackTexture = new Texture(Gdx.files.internal("regularBlue.jpg"));
+        Sprite stackSprite = new Sprite(stackTexture);
+        cardStack = new GenericCard(stackSprite);
         stage.addActor(cardStack);
         cardStack.setPosition(40, 40);
+
+        loadCards();
+        hand = new Array<Card>();
+        cardDeck.shuffle();
+
         cardStack.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -32,17 +36,14 @@ public class GameScreen extends BaseScreen {
                 stage.addActor(card);
                 hand.add(card);
                 card.setPosition(10 * i, 5);
-                cardDeck.get(i).setBounds(cardDeck.get(i).getX(),
-                        cardDeck.get(i).getY(),
-                        cardDeck.get(i).getSprite().getWidth(),
-                        cardDeck.get(i).getSprite().getHeight());
+                card.setBounds(card.getX(),
+                        card.getY(),
+                        card.getSprite().getWidth(),
+                        card.getSprite().getHeight());
                 return true;
             }
         });
 
-        loadCards();
-        hand = new Array<Card>();
-        cardDeck.shuffle();
     }
 
     @Override
@@ -79,7 +80,7 @@ public class GameScreen extends BaseScreen {
     {
         super.dispose();
         cardSheet.dispose();
-        cardStack.getTexture().dispose();
+        stackTexture.dispose();
     }
 
     /**

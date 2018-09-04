@@ -7,26 +7,23 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class Card extends Actor {
+public class Card extends GenericCard {
 
     public enum Suit {
         HEARTS, SPADES, DIAMONDS, CLUBS
     }
 
-    private Sprite cSprite;
     private Suit cSuit;
 
     private int value;
 
     //Constructor for regular card
     public Card(Sprite sprite, Suit suit, int value) {
-        this.cSprite = sprite;
-        cSprite.setSize(14, 19);
+        super(sprite);
 
         this.cSuit = suit;
         this.value = value;
 
-        setTouchable(Touchable.enabled);
         addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -42,22 +39,7 @@ public class Card extends Actor {
         return value;
     }
 
-    public Sprite getSprite() {
-        return cSprite;
-    }
-
     public Suit getSuit() {
         return cSuit;
-    }
-
-    @Override
-    public void draw (Batch batch, float parentAlpha) {
-        cSprite.draw(batch);
-    }
-
-    @Override
-    protected void positionChanged() {
-        cSprite.setPosition(getX(),getY());
-        super.positionChanged();
     }
 }
