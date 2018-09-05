@@ -14,6 +14,7 @@ public class GameScreen extends BaseScreen {
     private GenericCard cardStack;
     private Texture cardSheet;
     private int turn = 0;
+    Player opponent;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
@@ -38,6 +39,17 @@ public class GameScreen extends BaseScreen {
         });
 
         hand = new Array<Card>();
+
+        opponent = new Player();
+        dealHands();
+    }
+
+    private void dealHands()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            drawCard();
+        }
     }
 
     private void sortCards()
@@ -67,6 +79,7 @@ public class GameScreen extends BaseScreen {
         card.setPosition(80, 40);
         card.setZIndex(100 + turn++);   //  100 is arbitrary
         card.clearListeners();
+        sortCards();
     }
 
     /**
@@ -134,14 +147,6 @@ public class GameScreen extends BaseScreen {
             }
 
             Card card = new Card(cardSprite, suit, value, this,suitKey * 15 + valKey);
-            card.addListener(new ClickListener(){
-                @Override
-                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    playCard((Card) event.getTarget());
-                    event.handle();//the Stage will stop trying to handle this event
-                    return true; //the inputmultiplexer will stop trying to handle this touch
-                }
-            });
             deck.add(card);
 
 

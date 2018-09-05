@@ -25,6 +25,15 @@ public class Card extends GenericCard implements Comparable<Card> {
         this.cSuit = suit;
         this.value = value;
         this.order = order;
+
+        addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                screen.playCard((Card) event.getTarget());
+                event.handle();//the Stage will stop trying to handle this event
+                return true; //the inputmultiplexer will stop trying to handle this touch
+            }
+        });
     }
 
     public int getValue() {
