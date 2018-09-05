@@ -12,20 +12,19 @@ public class GameScreen extends BaseScreen {
 
     private Array<Card> cardDeck, hand;
     private GenericCard cardStack;
-    private Texture cardSheet, stackTexture;
+    private Texture cardSheet;
     private int turn = 0;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
 
         //  Prepare all cards in the deck
-        cardSheet = new Texture(Gdx.files.internal("deck.png"));
+        cardSheet = game.assetManager.get("deck.png", Texture.class);
         cardDeck = loadCards();
         cardDeck.shuffle();
 
         //  Prepare card stack to draw
-        stackTexture = new Texture(Gdx.files.internal("regularBlue.jpg"));
-        Sprite stackSprite = new Sprite(stackTexture);
+        Sprite stackSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
         cardStack = new GenericCard(stackSprite, this);
         stage.addActor(cardStack);
         cardStack.setPosition(60, 40);
@@ -166,7 +165,7 @@ public class GameScreen extends BaseScreen {
         super.render(delta);
 
         game.batch.begin();
-
+        game.font.draw(game.batch, Integer.toString(cardDeck.size),62, 38);
         game.batch.end();
     }
 
@@ -189,8 +188,7 @@ public class GameScreen extends BaseScreen {
     public void dispose()
     {
         super.dispose();
-        cardSheet.dispose();
-        stackTexture.dispose();
+        game.assetManager.dispose();
     }
 
 
