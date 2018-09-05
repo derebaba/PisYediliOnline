@@ -40,7 +40,10 @@ public class GameScreen extends BaseScreen {
 
         hand = new Array<Card>();
 
-        opponent = new Player();
+        Sprite opponentSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
+        opponent = new Player(opponentSprite);
+        stage.addActor(opponent);
+        opponent.setPosition(70, 70);
         dealHands();
     }
 
@@ -49,6 +52,7 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < 7; i++)
         {
             drawCard();
+            opponent.drawCard(cardDeck.pop());
         }
     }
 
@@ -57,10 +61,11 @@ public class GameScreen extends BaseScreen {
         hand.sort();
         for (int i = 0; i < hand.size; i++)
         {
-            hand.get(i).setZIndex(i);
-            hand.get(i).setPosition(20 + 10 * i, 5);
-            hand.get(i).setBounds(hand.get(i).getX(), hand.get(i).getY(),
-                    hand.get(i).getSprite().getWidth(), hand.get(i).getSprite().getHeight());
+            Card card = hand.get(i);
+            card.setZIndex(i);
+            card.setPosition(20 + 10 * i, 5);
+            card.setBounds(card.getX(), card.getY(),
+                    card.getSprite().getWidth(), card.getSprite().getHeight());
         }
     }
 
@@ -171,6 +176,7 @@ public class GameScreen extends BaseScreen {
 
         game.batch.begin();
         game.font.draw(game.batch, Integer.toString(cardDeck.size),62, 38);
+        game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
     }
 

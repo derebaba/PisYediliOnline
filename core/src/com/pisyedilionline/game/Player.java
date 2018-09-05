@@ -1,30 +1,27 @@
 package com.pisyedilionline.game;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 
-public class Player extends Actor
+public class Player extends BaseActor
 {
     private Array<Card> hand;
-    private Array<Sprite> sprites;
 
-    public Player()
+
+    public Player(Sprite sprite)
     {
+        super(sprite);
+
         hand = new Array<Card>();
     }
 
-    public void drawCard(Card c)
+    public void drawCard(Card card)
     {
-        hand.add(c);
+        hand.add(card);
     }
 
-    @Override
-    public void draw (Batch batch, float parentAlpha)
+    public Array<Card> getHand()
     {
-        /*
-        for ()
-        sprite.draw(batch);*/
+        return hand;
     }
 }
