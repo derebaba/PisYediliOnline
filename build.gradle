@@ -38,6 +38,9 @@ allprojects {
         google()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven {
+            url 'https://dl.bintray.com/heroiclabs/default/'
+        }
     }
 }
 
@@ -105,7 +108,10 @@ project(":core") {
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        
+        compile "com.heroiclabs.nakama:client:0.1.0" // set your version
+        compile('org.slf4j:slf4j-api:1.7.25') {
+            force = true // don't upgrade to "1.8.0-alpha2"
+        }
     }
 }
 
