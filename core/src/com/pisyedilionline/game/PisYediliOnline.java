@@ -2,6 +2,7 @@ package com.pisyedilionline.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,6 +15,7 @@ public class PisYediliOnline extends Game {
 
     public Logger logger;
     public AssetManager assetManager;
+    public Preferences prefs;
 
 	public SpriteBatch batch;
 	public BitmapFont font;
@@ -22,6 +24,10 @@ public class PisYediliOnline extends Game {
 	public void create() {
         logger = new Logger("genel");
         assetManager = new AssetManager();
+        prefs =  Gdx.app.getPreferences("SessionInfo");
+
+        NakamaSessionManager n = new NakamaSessionManager(this);
+        n.start();
 
 		batch = new SpriteBatch();
 
@@ -31,7 +37,7 @@ public class PisYediliOnline extends Game {
 		font.setColor(Color.WHITE);
 		font.setUseIntegerPositions(false);
 
-        logger.setLevel(Logger.DEBUG);
+        logger.setLevel(Logger.INFO);
 
 		this.setScreen(new MainMenuScreen(this));
 

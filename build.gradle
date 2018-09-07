@@ -105,13 +105,13 @@ project(":html") {
 project(":core") {
     apply plugin: "java"
 
-
     dependencies {
+        compile files('libs/nakama-java-2.0.0-SNAPSHOT-all.jar')
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.heroiclabs.nakama:client:0.1.0" // set your version
-        compile('org.slf4j:slf4j-api:1.7.25') {
-            force = true // don't upgrade to "1.8.0-alpha2"
-        }
+        //compile(group: 'com.heroiclabs.nakama', name: 'client', version: '+')
+
+        compile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.+')
+
     }
 }
 
