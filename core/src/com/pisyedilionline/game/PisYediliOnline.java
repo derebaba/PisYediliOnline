@@ -37,7 +37,7 @@ public class PisYediliOnline extends Game {
 		font.setColor(Color.WHITE);
 		font.setUseIntegerPositions(false);
 
-        logger.setLevel(Logger.INFO);
+        logger.setLevel(Logger.DEBUG);
 
 		this.setScreen(new MainMenuScreen(this));
 
