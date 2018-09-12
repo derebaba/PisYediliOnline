@@ -1,6 +1,4 @@
 buildscript {
-    
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -9,13 +7,14 @@ buildscript {
         jcenter()
         google()
     }
+
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.6'
-        classpath 'com.android.tools.build:gradle:3.1.0'
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.3'
-        
 
     }
+
 }
 
 allprojects {
@@ -42,6 +41,8 @@ allprojects {
             url 'https://dl.bintray.com/heroiclabs/default/'
         }
     }
+
+
 }
 
 project(":desktop") {
@@ -52,7 +53,6 @@ project(":desktop") {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        
     }
 }
 
@@ -104,6 +104,7 @@ project(":html") {
 
 project(":core") {
     apply plugin: "java"
+    apply plugin: 'idea'
 
     dependencies {
         compile files('libs/nakama-java-2.0.0-SNAPSHOT-all.jar')

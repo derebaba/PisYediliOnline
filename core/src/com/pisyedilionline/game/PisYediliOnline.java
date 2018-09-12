@@ -20,14 +20,16 @@ public class PisYediliOnline extends Game {
 	public SpriteBatch batch;
 	public BitmapFont font;
 
+	public NakamaSessionManager nakama;
+
 	@Override
 	public void create() {
         logger = new Logger("genel");
         assetManager = new AssetManager();
         prefs =  Gdx.app.getPreferences("SessionInfo");
 
-        NakamaSessionManager n = new NakamaSessionManager(this);
-        n.start();
+        nakama = new NakamaSessionManager(this);
+		nakama.start();
 
 		batch = new SpriteBatch();
 
