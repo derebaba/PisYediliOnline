@@ -46,7 +46,6 @@ public class GameScreen extends BaseScreen {
         opponent.setPosition(70, 70);
         dealHands();
 
-        //game.logger.info(game.nakama.createMatch());
     }
 
     private void dealHands()
@@ -180,6 +179,8 @@ public class GameScreen extends BaseScreen {
         game.font.draw(game.batch, Integer.toString(cardDeck.size),62, 38);
         game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
+
+        if (game.isConnected()) game.nakama.createMatch();
     }
 
     @Override

@@ -22,6 +22,8 @@ public class PisYediliOnline extends Game {
 
 	public NakamaSessionManager nakama;
 
+	private boolean isConnected = false;
+
 	@Override
 	public void create() {
         logger = new Logger("genel");
@@ -47,6 +49,15 @@ public class PisYediliOnline extends Game {
         assetManager.load("regularBlue.jpg", Texture.class);
 	}
 
+	public void setConnected(boolean isConnected)
+	{
+		this.isConnected = isConnected;
+	}
+
+	public boolean isConnected()
+	{
+		return isConnected;
+	}
 	public void render() {
 		super.render(); //important!
 	}

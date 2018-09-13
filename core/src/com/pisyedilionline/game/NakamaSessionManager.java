@@ -19,7 +19,7 @@ public class NakamaSessionManager
 	private Session session;
 	private SocketClient socket;
 
-	private Logger nakamaLogger;
+	private Logger logger;
 
 	public NakamaSessionManager(final PisYediliOnline game)
 	{
@@ -27,18 +27,23 @@ public class NakamaSessionManager
 
 		client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
 
-		nakamaLogger = LoggerFactory.getLogger(NakamaSessionManager.class);
+		logger = LoggerFactory.getLogger(NakamaSessionManager.class);
 	}
 
-	/*
-		public String createMatch()
-		{
-			ListenableFuture<Match> createMatch = socket.createMatch();
 
-			Futures.transform(createMatch, );
-			return match.getMatchId();
-		}
-	*/
+	public void createMatch()
+	{
+		final ListenableFuture<Match> createMatch = socket.createMatch();
+
+		final Function<Match, Object> print = match ->
+		{
+			logger.info("Match created with ID: {}", match.getMatchId());
+			return null;
+		};
+
+		Futures.transform(createMatch, print);
+	}
+
 	public void start()
 	{
 		// Lets check if we can restore a cached session.
@@ -46,14 +51,17 @@ public class NakamaSessionManager
 		if (sessionString != null && !sessionString.isEmpty())
 		{
 			Session restoredSession = DefaultSession.restore(sessionString);
-			if (!session.isExpired(new Date()))
+			if (session != null)
 			{
-				// Session was valid and is restored now.
-				this.session = restoredSession;
-				return;
+				if (!session.isExpired(new Date()))
+				{
+					// Session was valid and is restored now.
+					this.session = restoredSession;
+					return;
+				}
+				logger.info("Session is expired.");
 			}
-
-			nakamaLogger.info("Session is expired.");
+			logger.warn("Session is null.");
 		}
 
 		String deviceId = UUID.randomUUID().toString();
@@ -66,7 +74,7 @@ public class NakamaSessionManager
 			game.prefs.putString("nk.session", session.getAuthToken());
 			game.prefs.flush();
 
-			nakamaLogger.info("Authentication is successful with token: {}", session.getAuthToken());
+			logger.info("Authentication is successful with token: {}", session.getAuthToken());
 
 			return client.createSocket();
 		};
@@ -75,7 +83,8 @@ public class NakamaSessionManager
 
 		final AsyncFunction<SocketClient, Session> connectSocket = socket ->
 		{
-			this.socket = socket;
+			game.nakama.socket = socket;
+
 			return socket.connect(session, new AbstractClientListener()
 			{
 			});
@@ -85,8 +94,9 @@ public class NakamaSessionManager
 
 		final Function<Session, Object> assignSession = session ->
 		{
-			nakamaLogger.info("soket kuruldu");
+			logger.info("soket kuruldu");
 			this.session = session;
+			game.setConnected(true);
 			return null;
 		};
 
