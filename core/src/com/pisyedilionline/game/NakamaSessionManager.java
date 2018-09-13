@@ -67,7 +67,7 @@ public class NakamaSessionManager
 		String deviceId = UUID.randomUUID().toString();
 		final ListenableFuture<Session> authentication = client.authenticateDevice(deviceId);
 
-		final Function<Session, SocketClient> onAuthenticate = session ->
+		final AsyncFunction<Session, Session> onAuthenticate = session ->
 		{
 			// Login was successful.
 			// Store the session for later use.
@@ -76,21 +76,13 @@ public class NakamaSessionManager
 
 			logger.info("Authentication is successful with token: {}", session.getAuthToken());
 
-			return client.createSocket();
-		};
-
-		final ListenableFuture<SocketClient> authenticateFuture = Futures.transform(authentication, onAuthenticate);
-
-		final AsyncFunction<SocketClient, Session> connectSocket = socket ->
-		{
-			game.nakama.socket = socket;
-
+			this.socket = client.createSocket();
 			return socket.connect(session, new AbstractClientListener()
 			{
 			});
 		};
 
-		final ListenableFuture<Session> socketFuture = Futures.transformAsync(authenticateFuture, connectSocket);
+		final ListenableFuture<Session> authenticateFuture = Futures.transformAsync(authentication, onAuthenticate);
 
 		final Function<Session, Object> assignSession = session ->
 		{
@@ -100,6 +92,6 @@ public class NakamaSessionManager
 			return null;
 		};
 
-		Futures.transform(socketFuture, assignSession);
+		Futures.transform(authenticateFuture, assignSession);
 	}
 }

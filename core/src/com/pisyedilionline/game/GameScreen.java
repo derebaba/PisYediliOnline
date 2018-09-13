@@ -180,7 +180,8 @@ public class GameScreen extends BaseScreen {
         game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
 
-        if (game.isConnected()) game.nakama.createMatch();
+        //	sürekli maç oluşturuyor
+        //if (game.isConnected()) game.nakama.createMatch();
     }
 
     @Override
