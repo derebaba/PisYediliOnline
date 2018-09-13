@@ -45,6 +45,8 @@ public class GameScreen extends BaseScreen {
         stage.addActor(opponent);
         opponent.setPosition(70, 70);
         dealHands();
+
+        //game.logger.info(game.nakama.createMatch());
     }
 
     private void dealHands()
