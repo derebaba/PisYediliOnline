@@ -27,6 +27,8 @@ public class PisYediliOnline extends Game {
 	@Override
 	public void create() {
         logger = new Logger("Genel");
+		logger.setLevel(Logger.DEBUG);
+
         assetManager = new AssetManager();
         prefs =  Gdx.app.getPreferences("SessionInfo");
 
@@ -41,10 +43,9 @@ public class PisYediliOnline extends Game {
 		font.setColor(Color.WHITE);
 		font.setUseIntegerPositions(false);
 
-        logger.setLevel(Logger.DEBUG);
-
 		this.setScreen(new MainMenuScreen(this));
 
+		//	load assets
 		assetManager.load("deck.png", Texture.class);
         assetManager.load("regularBlue.jpg", Texture.class);
 	}

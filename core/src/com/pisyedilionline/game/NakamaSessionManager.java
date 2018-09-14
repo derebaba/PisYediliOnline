@@ -45,17 +45,15 @@ public class NakamaSessionManager
 		if (sessionString != null && !sessionString.isEmpty())
 		{
 			Session restoredSession = DefaultSession.restore(sessionString);
-			if (session != null)
+
+			if (!restoredSession.isExpired(new Date()))
 			{
-				if (!session.isExpired(new Date()))
-				{
-					// Session was valid and is restored now.
-					this.session = restoredSession;
-					return;
-				}
-				game.logger.info("Session is expired.");
+				// Session was valid and is restored now.
+				session = restoredSession;
+				game.logger.info("Session is restored.");
+				return;
 			}
-			game.logger.error("Session is null.");
+			game.logger.info("Session is expired.");
 		}
 
 		String deviceId = UUID.randomUUID().toString();
