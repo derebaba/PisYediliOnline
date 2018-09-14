@@ -26,7 +26,7 @@ public class PisYediliOnline extends Game {
 
 	@Override
 	public void create() {
-        logger = new Logger("genel");
+        logger = new Logger("Genel");
         assetManager = new AssetManager();
         prefs =  Gdx.app.getPreferences("SessionInfo");
 

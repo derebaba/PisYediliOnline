@@ -69,7 +69,6 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-
     }
 }
 
@@ -104,15 +103,10 @@ project(":html") {
 
 project(":core") {
     apply plugin: "java"
-    apply plugin: 'idea'
 
     dependencies {
         compile files('libs/nakama-java-2.0.0-SNAPSHOT-all.jar')
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        //compile(group: 'com.heroiclabs.nakama', name: 'client', version: '+')
-
-        compile(group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.+')
-
     }
 }
 

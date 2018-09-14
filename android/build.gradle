@@ -1,6 +1,10 @@
 android {
     buildToolsVersion "28.0.2"
     compileSdkVersion 28
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -18,10 +22,11 @@ android {
     }
     defaultConfig {
         applicationId "com.pisyedilionline.game"
-        minSdkVersion 9
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
 }
 

@@ -3,11 +3,8 @@ package com.pisyedilionline.game;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.*;
 import com.heroiclabs.nakama.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import PisYediliOnline.BuildConfig;
 
-import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -19,15 +16,12 @@ public class NakamaSessionManager
 	private Session session;
 	private SocketClient socket;
 
-	private Logger logger;
 
 	public NakamaSessionManager(final PisYediliOnline game)
 	{
 		this.game = game;
 
 		client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
-
-		logger = LoggerFactory.getLogger(NakamaSessionManager.class);
 	}
 
 
@@ -37,7 +31,7 @@ public class NakamaSessionManager
 
 		final Function<Match, Object> print = match ->
 		{
-			logger.info("Match created with ID: {}", match.getMatchId());
+			game.logger.info("Match created with ID: {}" + match.getMatchId());
 			return null;
 		};
 
@@ -59,9 +53,9 @@ public class NakamaSessionManager
 					this.session = restoredSession;
 					return;
 				}
-				logger.info("Session is expired.");
+				game.logger.info("Session is expired.");
 			}
-			logger.warn("Session is null.");
+			game.logger.error("Session is null.");
 		}
 
 		String deviceId = UUID.randomUUID().toString();
@@ -74,7 +68,7 @@ public class NakamaSessionManager
 			game.prefs.putString("nk.session", session.getAuthToken());
 			game.prefs.flush();
 
-			logger.info("Authentication is successful with token: {}", session.getAuthToken());
+			game.logger.info("Authentication is successful with token: {}" + session.getAuthToken());
 
 			this.socket = client.createSocket();
 			return socket.connect(session, new AbstractClientListener()
@@ -86,7 +80,7 @@ public class NakamaSessionManager
 
 		final Function<Session, Object> assignSession = session ->
 		{
-			logger.info("soket kuruldu");
+			game.logger.info("soket kuruldu");
 			this.session = session;
 			game.setConnected(true);
 			return null;
