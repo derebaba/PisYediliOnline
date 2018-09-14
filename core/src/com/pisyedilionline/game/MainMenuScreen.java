@@ -1,54 +1,87 @@
 package com.pisyedilionline.game;
 
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.heroiclabs.nakama.MatchmakerTicket;
 
-public class MainMenuScreen extends BaseScreen {
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
 
-    public MainMenuScreen(final PisYediliOnline game) {
-        super(game);
-    }
+public class MainMenuScreen extends BaseScreen
+{
+	TextButton findMatchButton;
+	Skin skin;
 
-    @Override
-    public void show() {
+	public MainMenuScreen(final PisYediliOnline game)
+	{
+		super(game);
 
-    }
+		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-    @Override
-    public void render(float delta) {
-        if(game.assetManager.update()) {
-            game.setScreen(new GameScreen(game));
-            dispose();
-        }
+		findMatchButton = new TextButton("Find a match", skin);
+		stage.addActor(findMatchButton);
+		findMatchButton.setSize(50, 20);
+		findMatchButton.setPosition(50, 50);
+		findMatchButton.getLabel().setFontScale(0.5f);
+		findMatchButton.addListener(new InputListener()
+		{
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+			{
+				String query = "*";
+				int minCount = 2;
+				int maxCount = 2;
 
-        super.render(delta);
+				final ListenableFuture<MatchmakerTicket> matchmakerFuture = game.nakama.getSocket()
+						.addMatchmaker(minCount, maxCount, query);
+				game.logger.info("Started matchmaking...");
 
-        game.batch.begin();
-        game.font.draw(game.batch, "Pis Yedili - 7", 10, 50);
-        game.font.draw(game.batch, "Yukleniyor", 10, 20);
+				final Function<MatchmakerTicket, Object> onMatchmade = matchmakerTicket ->
+				{
+					game.setScreen(new GameScreen(game));
+					game.logger.info("Found a match with ticket: " + matchmakerTicket.getTicket());
+					dispose();
+					return null;
+				};
 
-        // display loading information
-        float progress = game.assetManager.getProgress();
-        game.font.draw(game.batch, Float.toString(progress), 100, 20);
-        game.batch.end();
-    }
+				Futures.transform(matchmakerFuture, onMatchmade);
 
-    @Override
-    public void pause() {
+				return true;
+			}
+		});
+	}
 
-    }
+	@Override
+	public void show()
+	{
 
-    @Override
-    public void resume() {
+	}
 
-    }
+	@Override
+	public void pause()
+	{
 
-    @Override
-    public void hide() {
+	}
 
-    }
+	@Override
+	public void resume()
+	{
 
-    @Override
-    public void dispose() {
-        super.dispose();
-    }
+	}
+
+	@Override
+	public void hide()
+	{
+
+	}
 }

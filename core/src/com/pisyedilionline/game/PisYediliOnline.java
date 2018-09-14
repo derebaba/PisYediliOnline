@@ -43,7 +43,7 @@ public class PisYediliOnline extends Game {
 		font.setColor(Color.WHITE);
 		font.setUseIntegerPositions(false);
 
-		this.setScreen(new MainMenuScreen(this));
+		this.setScreen(new SplashScreen(this));
 
 		//	load assets
 		assetManager.load("deck.png", Texture.class);

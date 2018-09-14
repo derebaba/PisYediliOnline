@@ -24,19 +24,7 @@ public class NakamaSessionManager
 		client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
 	}
 
-
-	public void createMatch()
-	{
-		final ListenableFuture<Match> createMatch = socket.createMatch();
-
-		final Function<Match, Object> print = match ->
-		{
-			game.logger.info("Match created with ID: {}" + match.getMatchId());
-			return null;
-		};
-
-		Futures.transform(createMatch, print);
-	}
+	public SocketClient getSocket() { return socket; }
 
 	public void start()
 	{
@@ -50,6 +38,7 @@ public class NakamaSessionManager
 			{
 				// Session was valid and is restored now.
 				session = restoredSession;
+				socket = client.createSocket();
 				game.logger.info("Session is restored.");
 				return;
 			}
@@ -66,9 +55,9 @@ public class NakamaSessionManager
 			game.prefs.putString("nk.session", session.getAuthToken());
 			game.prefs.flush();
 
-			game.logger.info("Authentication is successful with token: {}" + session.getAuthToken());
+			game.logger.info("Authentication is successful with token: " + session.getAuthToken());
 
-			this.socket = client.createSocket();
+			socket = client.createSocket();
 			return socket.connect(session, new AbstractClientListener()
 			{
 			});
