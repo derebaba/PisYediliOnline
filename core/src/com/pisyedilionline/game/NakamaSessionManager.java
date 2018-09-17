@@ -22,7 +22,7 @@ public class NakamaSessionManager
 		this.game = game;
 
 		client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
-		//client = new DefaultClient("defaultkey", "192.168.1.33", 7349, false);	//	uncomment for local development
+		//client = new DefaultClient("defaultkey", "10.108.180.185", 7349, false);	//	uncomment for local development
 	}
 
 	public SocketClient getSocket() { return socket; }
@@ -59,15 +59,7 @@ public class NakamaSessionManager
 			game.logger.info("Authentication is successful with token: " + session.getAuthToken());
 
 			socket = client.createSocket();
-			return socket.connect(session, new AbstractClientListener()
-			{
-				@Override
-				public void onMatchmakeMatched(MatchmakerMatched matched)
-				{
-				game.logger.info("found match");
-				((MainMenuScreen)game.getScreen()).setFoundMatch(true);
-				}
-			});
+			return socket.connect(session, new PisClientListener(game));
 		};
 
 		final ListenableFuture<Session> authenticateFuture = Futures.transformAsync(authentication, onAuthenticate);

@@ -52,4 +52,6 @@ public abstract class BaseScreen implements Screen {
     {
         stage.dispose();
     }
+
+    public Stage getStage() { return stage; }
 }

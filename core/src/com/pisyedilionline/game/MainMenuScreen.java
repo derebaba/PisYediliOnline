@@ -30,8 +30,10 @@ public class MainMenuScreen extends BaseScreen
 
 		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-		findMatchButton = new TextButton("Find a match", skin);
+		findMatchButton = new TextButton("Mac bul", skin);
 		stage.addActor(findMatchButton);
+
+		findMatchButton.setVisible(false);
 		findMatchButton.setSize(50, 20);
 		findMatchButton.setPosition(50, 50);
 		findMatchButton.getLabel().setFontScale(0.5f);
@@ -44,19 +46,9 @@ public class MainMenuScreen extends BaseScreen
 				int minCount = 2;
 				int maxCount = 2;
 
-				final ListenableFuture<MatchmakerTicket> matchmakerFuture = game.nakama.getSocket()
+				game.nakama.getSocket()
 						.addMatchmaker(minCount, maxCount, query);
 				game.logger.info("Started matchmaking...");
-
-				final Function<MatchmakerTicket, Object> onMatchmade = matchmakerTicket ->
-				{
-					game.setScreen(new GameScreen(game));
-					game.logger.info("Found a match with ticket: " + matchmakerTicket.getTicket());
-					dispose();
-					return null;
-				};
-
-				Futures.transform(matchmakerFuture, onMatchmade);
 
 				return true;
 			}
@@ -74,10 +66,19 @@ public class MainMenuScreen extends BaseScreen
 	public void render(float delta)
 	{
 		super.render(delta);
-		if(foundMatch)
+		if (foundMatch)
 		{
 			game.setScreen(new GameScreen(game));
 			dispose();
+		}
+
+		findMatchButton.setVisible(game.isConnected());
+
+		if (!game.isConnected())
+		{
+			game.batch.begin();
+			game.font.draw(game.batch, "Baglaniyor", 10, 20);
+			game.batch.end();
 		}
 	}
 
