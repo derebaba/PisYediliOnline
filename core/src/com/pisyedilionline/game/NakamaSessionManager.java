@@ -21,8 +21,8 @@ public class NakamaSessionManager
 	{
 		this.game = game;
 
-		client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
-		//client = new DefaultClient("defaultkey", "10.108.180.185", 7349, false);	//	uncomment for local development
+		//client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
+		client = new DefaultClient("defaultkey", "localhost", 7349, false);	//	uncomment for local development
 	}
 
 	public SocketClient getSocket() { return socket; }
@@ -41,6 +41,7 @@ public class NakamaSessionManager
 				session = restoredSession;
 				socket = client.createSocket();
 				game.logger.info("Session is restored.");
+				game.setConnected(true);
 				return;
 			}
 			game.logger.info("Session is expired.");
