@@ -1,6 +1,7 @@
 package com.pisyedilionline.game;
 
 import com.heroiclabs.nakama.*;
+import com.heroiclabs.nakama.Error;
 import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
 
@@ -25,7 +26,12 @@ public class PisClientListener implements ClientListener
 
 	}
 
-	@Override
+    @Override
+    public void onError(Error error) {
+
+    }
+
+    @Override
 	public void onChannelMessage(ChannelMessage channelMessage)
 	{
 
