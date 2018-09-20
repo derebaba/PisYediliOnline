@@ -105,15 +105,8 @@ project(":core") {
     apply plugin: "java"
 
     dependencies {
-        compile files('libs/nakama-java-2.0.0-SNAPSHOT.jar')
+        compile files('libs/nakama-java-2.0.0-SNAPSHOT-all.jar')
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
-        compile('org.slf4j:slf4j-api:1.7.25') {
-            force = true // don't upgrade to "1.8.0-alpha2"
-        }
-        compile 'io.grpc:grpc-okhttp:1.15.0'
-        compile 'io.grpc:grpc-protobuf-lite:1.15.0'
-        compile 'io.grpc:grpc-stub:1.15.0'
     }
 }
 

@@ -6,6 +6,7 @@ import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PisClientListener implements ClientListener
@@ -23,12 +24,12 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onDisconnect(Throwable throwable)
 	{
-
+		throwable.printStackTrace();
 	}
 
     @Override
     public void onError(Error error) {
-
+		error.printStackTrace();
     }
 
     @Override
@@ -54,15 +55,20 @@ public class PisClientListener implements ClientListener
 	}
 
 	@Override
-	public void onMatchData(MatchData matchData)
+	public void onMatchData(final MatchData matchData)
 	{
-		game.logger.info("Received match data " + matchData.getData() + " with opcode " + matchData.getOpCode());
+		game.logger.info("Received match data " + Arrays.toString(matchData.getData()) + " with opcode " + matchData.getOpCode());
 	}
 
 	@Override
 	public void onMatchPresence(MatchPresenceEvent matchPresenceEvent)
 	{
 		game.logger.info("present");
+
+		long opCode = 1;
+		String data = "{\"message\":\"Hello world\"}";
+		game.nakama.getSocket().sendMatchData(matchPresenceEvent.getMatchId(), opCode, data.getBytes());
+/*
 		connectedOpponents.addAll(matchPresenceEvent.getJoins());
 		for (UserPresence leave : matchPresenceEvent.getLeaves()) {
 			for (int i = 0; i < connectedOpponents.size(); i++) {
@@ -71,6 +77,7 @@ public class PisClientListener implements ClientListener
 				}
 			}
 		};
+*/
 	}
 
 	@Override
