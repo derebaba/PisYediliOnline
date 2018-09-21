@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class Card extends GenericCard implements Comparable<Card> {
 
     public enum Suit {
-        HEARTS, SPADES, DIAMONDS, CLUBS
+		CLUBS, DIAMONDS, HEARTS, SPADES,
     }
 
     private Suit cSuit;

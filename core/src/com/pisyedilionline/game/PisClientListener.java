@@ -1,5 +1,6 @@
 package com.pisyedilionline.game;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.heroiclabs.nakama.*;
 import com.heroiclabs.nakama.Error;
 import com.heroiclabs.nakama.api.ChannelMessage;
@@ -57,17 +58,26 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onMatchData(final MatchData matchData)
 	{
-		game.logger.info("Received match data " + Arrays.toString(matchData.getData()) + " with opcode " + matchData.getOpCode());
+		try
+		{
+			MessageProtos.Person p = MessageProtos.Person.parseFrom(matchData.getData());
+			game.logger.info("Received match data " + p.getCards() + " with opcode " + matchData.getOpCode());
+		}
+		catch (InvalidProtocolBufferException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
 	public void onMatchPresence(MatchPresenceEvent matchPresenceEvent)
 	{
 		game.logger.info("present");
-
+/*
 		long opCode = 1;
 		String data = "{\"message\":\"Hello world\"}";
-		game.nakama.getSocket().sendMatchData(matchPresenceEvent.getMatchId(), opCode, data.getBytes());
+		game.nakama.getSocket().sendMatchData(matchPresenceEvent.getMatchId(), opCode, data.getBytes());*/
 /*
 		connectedOpponents.addAll(matchPresenceEvent.getJoins());
 		for (UserPresence leave : matchPresenceEvent.getLeaves()) {

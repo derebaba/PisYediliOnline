@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameScreen extends BaseScreen {
 
+	final Card.Suit[] SUITS = Card.Suit.values();
+
     private Array<Card> cardDeck, hand;
     private GenericCard cardStack;
     private Texture cardSheet;

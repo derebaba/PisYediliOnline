@@ -30,6 +30,7 @@ public class NakamaSessionManager
 	public void start()
 	{
 		// Lets check if we can restore a cached session.
+		/*
 		String sessionString = game.prefs.getString("nk.session", null);
 		if (sessionString != null && !sessionString.isEmpty())
 		{
@@ -46,7 +47,7 @@ public class NakamaSessionManager
 			}
 			game.logger.info("Session is expired.");
 		}
-
+		*/
 		String deviceId = UUID.randomUUID().toString();
 		final ListenableFuture<Session> authentication = client.authenticateDevice(deviceId);
 
