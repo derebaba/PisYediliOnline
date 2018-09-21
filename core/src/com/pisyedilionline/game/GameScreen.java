@@ -95,71 +95,43 @@ public class GameScreen extends BaseScreen {
         TextureRegion region;
         Sprite cardSprite;
 
-        int row = 9;
-
-        int width = 140;
-        int height = 190;
+        int width = 79;
+        int height = 123;
 
         int xPos = 0;
         int yPos = 0;
 
-        int value = 10;
-
-        int valKey;
-        int suitKey;
-
-        Card.Suit suit;
-
         Array<Card> deck = new Array<Card>();
 
-        for (int i = 0; i < 52; i++, yPos += height) {
-            if (xPos == 140 && yPos == height * 3) {
-                i--;
-                continue;
-            }
-
+        for (int i = 0; i < 52; i++, xPos += width)
+        {
             region = new TextureRegion(cardSheet, xPos, yPos, width, height);
             cardSprite = new Sprite(region);
 
             //Keeps track of which card in the suit is being loaded
-            valKey = i % 13;
-
-            if (valKey >= 0 && valKey < 3) {
-                value = 12 + valKey;
-            } else if (valKey == 3) {
-                value = 11;
-            } else {
-                value--;
-            }
+            int value = (i % 13) + 1;
 
             //Keeps track of the suit of the card being loaded
-            suitKey = i / 13;
+            int suitKey = i / 13;
+
+			Card.Suit suit;
 
             if (suitKey < 1) {
-                suit = Card.Suit.SPADES;
+                suit = Card.Suit.CLUBS;
             } else if (suitKey == 1) {
-                suit = Card.Suit.HEARTS;
-            } else if (suitKey == 2) {
                 suit = Card.Suit.DIAMONDS;
-            } else {
-                suit = Card.Suit.CLUBS;
-            }
-
-            //A special exception for two cards on the spritesheet which are out of place
-            if (valKey == 12 && suitKey == 1) {
-                suit = Card.Suit.CLUBS;
-            } else if (valKey == 12 && suitKey > 2) {
+            } else if (suitKey == 2) {
                 suit = Card.Suit.HEARTS;
+            } else {
+                suit = Card.Suit.SPADES;
             }
 
-            Card card = new Card(cardSprite, suit, value, this,suitKey * 15 + valKey);
-            deck.add(card);
+            deck.add(new Card(cardSprite, suit, value, this,suitKey * 15 + value));
 
-
-            //Moves to the next column of the sprite sheet after reaching the 10th row
-            if (yPos >= height * row) {
-                yPos = -height;
-                xPos += width;
+            //Moves to the next column of the sprite sheet after a suit is completed
+            if (xPos == width * 12) {
+				xPos = -width;
+                yPos += height;
             }
         }
         return deck;

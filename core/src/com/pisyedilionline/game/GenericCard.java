@@ -14,7 +14,7 @@ public class GenericCard extends BaseActor {
         this.sprite = sprite;
         this.screen = screen;
 
-        setSize(14, 19);
+        setSize(14, 21);
 
         setTouchable(Touchable.enabled);
     }
