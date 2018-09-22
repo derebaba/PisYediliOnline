@@ -107,6 +107,7 @@ project(":core") {
     dependencies {
         compile files('libs/nakama-java-2.0.0-SNAPSHOT-all.jar')
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        implementation 'com.google.code.gson:gson:2.8.5'
     }
 }
 

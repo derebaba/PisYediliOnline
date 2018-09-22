@@ -1,24 +1,30 @@
 package com.pisyedilionline.game;
 
+import com.google.gson.Gson;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.heroiclabs.nakama.*;
 import com.heroiclabs.nakama.Error;
 import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
 
+import javax.xml.bind.DatatypeConverter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.pisyedilionline.game.Opcode.GAME_INIT;
+
 public class PisClientListener implements ClientListener
 {
 	private final PisYediliOnline game;
-	List<UserPresence> connectedOpponents;
+	private List<UserPresence> connectedOpponents;
+	private Gson gson;
 
 	public PisClientListener(final PisYediliOnline game)
 	{
 		this.game = game;
 
+		gson = new Gson();
 		connectedOpponents = new ArrayList<UserPresence>();
 	}
 
@@ -58,22 +64,21 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onMatchData(final MatchData matchData)
 	{
-		try
+		switch (Opcode.getById(matchData.getOpCode()))
 		{
-			MessageProtos.Person p = MessageProtos.Person.parseFrom(matchData.getData());
-			game.logger.info("Received match data " + p.getCards() + " with opcode " + matchData.getOpCode());
+			case GAME_INIT:
+				GameStartMessage message = gson.fromJson(new String(matchData.getData()), GameStartMessage.class);
+				game.logger.info("GameStartMessage = " + message);
+			break;
 		}
-		catch (InvalidProtocolBufferException e)
-		{
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override
-	public void onMatchPresence(MatchPresenceEvent matchPresenceEvent)
+	public void onMatchPresence(final MatchPresenceEvent matchPresenceEvent)
 	{
-		game.logger.info("present");
+		game.logger.info("Present in match");
+
+		game.state = new GameState();
 /*
 		long opCode = 1;
 		String data = "{\"message\":\"Hello world\"}";

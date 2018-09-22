@@ -50,12 +50,16 @@ public class GameScreen extends BaseScreen {
 
     }
 
+    public void setHand(int[] hand)
+    {
+
+    }
+
     private void dealHands()
     {
         for (int i = 0; i < 7; i++)
         {
-            drawCard();
-            opponent.drawCard(cardDeck.pop());
+            //opponent.drawCard(cardDeck.pop());
         }
     }
 
@@ -151,7 +155,7 @@ public class GameScreen extends BaseScreen {
 
         game.batch.begin();
         game.font.draw(game.batch, Integer.toString(cardDeck.size),62, 38);
-        game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
+        //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
 
         //	sürekli maç oluşturuyor

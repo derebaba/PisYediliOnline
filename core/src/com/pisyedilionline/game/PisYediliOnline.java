@@ -21,6 +21,7 @@ public class PisYediliOnline extends Game {
 	public BitmapFont font;
 
 	public NakamaSessionManager nakama;
+	public GameState state;
 
 	private boolean isConnected = false;
 
