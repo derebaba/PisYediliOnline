@@ -16,12 +16,12 @@ public class GameStartMessage {
         }
     }
 
-    public int[] cards;
-    PlayerMessage[] playerMessages;
+    int[] cards;
+    PlayerMessage[] players;
     int turn, deckSize;
 
     @Override
     public String toString() {
-        return "Cards: " + Arrays.toString(cards) + " turn = " + turn + " deckSize: " + deckSize + " Players: " + Arrays.deepToString(playerMessages);
+        return "Cards: " + Arrays.toString(cards) + " turn = " + turn + " deckSize: " + deckSize + " Players: " + Arrays.deepToString(players);
     }
 }
