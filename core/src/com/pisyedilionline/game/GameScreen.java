@@ -1,9 +1,7 @@
 package com.pisyedilionline.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
@@ -12,22 +10,23 @@ public class GameScreen extends BaseScreen {
 
 	final Card.Suit[] SUITS = Card.Suit.values();
 
-    private Array<Card> cardDeck, hand;
-    private GenericCard cardStack;
-    private Texture cardSheet;
+	private AllCards allCards;
+	private Array<Card> hand;
     private int turn = 0;
-    Player opponent;
 
     public GameScreen(final PisYediliOnline game) {
         super(game);
 
-        //  Prepare all cards in the deck
-        cardSheet = game.assetManager.get("deck.png", Texture.class);
-        cardDeck = loadCards();
-        cardDeck.shuffle();
+        allCards = new AllCards(game);
+        hand = new Array<Card>();
 
+        for (Card card : allCards.getCardDeck())
+        {
+            stage.addActor(card);
+        }
         //  Prepare card stack to draw
         Sprite stackSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
+        /*
         cardStack = new GenericCard(stackSprite, this);
         stage.addActor(cardStack);
         cardStack.setPosition(60, 40);
@@ -39,28 +38,24 @@ public class GameScreen extends BaseScreen {
                 return true;
             }
         });
-
-        hand = new Array<Card>();
-
+*/
         Sprite opponentSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
+        /*
         opponent = new Player(opponentSprite);
         stage.addActor(opponent);
         opponent.setPosition(70, 70);
         dealHands();
-
+*/
+        update();
     }
 
-    public void setHand(int[] hand)
+    public void update()
     {
-
-    }
-
-    private void dealHands()
-    {
-        for (int i = 0; i < 7; i++)
+        for (int id : game.state.getHand())
         {
-            //opponent.drawCard(cardDeck.pop());
+            hand.add(allCards.getCardById(id));
         }
+        sortCards();
     }
 
     private void sortCards()
@@ -77,6 +72,7 @@ public class GameScreen extends BaseScreen {
     }
 
     //  TODO: kendi sırası değilse false dönsün
+    /*
     public void drawCard()
     {
         Card card = cardDeck.pop();
@@ -84,7 +80,7 @@ public class GameScreen extends BaseScreen {
         hand.add(card);
         sortCards();
     }
-
+*/
     public void playCard(Card card)
     {
         hand.removeValue(card, false);
@@ -94,55 +90,7 @@ public class GameScreen extends BaseScreen {
         sortCards();
     }
 
-    /**
-     * Load card sprites from image. Assign card values and suits. Return card deck in an array.
-     */
-    private Array<Card> loadCards() {
-        TextureRegion region;
-        Sprite cardSprite;
 
-        int width = 79;
-        int height = 123;
-
-        int xPos = 0;
-        int yPos = 0;
-
-        Array<Card> deck = new Array<Card>();
-
-        for (int i = 0; i < 52; i++, xPos += width)
-        {
-            region = new TextureRegion(cardSheet, xPos, yPos, width, height);
-            cardSprite = new Sprite(region);
-
-            //Keeps track of which card in the suit is being loaded
-            int value = (i % 13) + 1;
-
-            //Keeps track of the suit of the card being loaded
-            int suitKey = i / 13;
-
-			Card.Suit suit;
-
-            if (suitKey < 1) {
-                suit = Card.Suit.CLUBS;
-            } else if (suitKey == 1) {
-                suit = Card.Suit.DIAMONDS;
-            } else if (suitKey == 2) {
-                suit = Card.Suit.HEARTS;
-            } else {
-                suit = Card.Suit.SPADES;
-            }
-
-            deck.add(new Card(cardSprite, suit, value, this,suitKey * 15 + value));
-
-            //Moves to the next column of the sprite sheet after a suit is completed
-            if (xPos == width * 12) {
-				xPos = -width;
-                yPos += height;
-            }
-        }
-        return deck;
-
-    }
 
     @Override
     public void show() {
@@ -154,7 +102,7 @@ public class GameScreen extends BaseScreen {
         super.render(delta);
 
         game.batch.begin();
-        game.font.draw(game.batch, Integer.toString(cardDeck.size),62, 38);
+        game.font.draw(game.batch, Integer.toString(game.state.getDeckSize()),62, 38);
         //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
 

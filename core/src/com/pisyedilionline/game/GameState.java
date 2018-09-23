@@ -2,18 +2,47 @@ package com.pisyedilionline.game;
 
 import com.badlogic.gdx.utils.Array;
 
+import java.util.ArrayList;
+
 public class GameState {
 
-    private Array<Card> hand;
+    private ArrayList<Integer> hand;
     private Array<Player> opponents;
     private int deckSize = 0;
-    private Card topCard;
-    private Player.Direction direction;
+    private ArrayList<Integer> pile;
+    private int direction;
+    private int turn;
+    private String username;
+    private GameScreen gameScreen;
 
-    public GameState()
+    public GameState(GameStartMessage message, String username)
     {
-        hand = new Array<Card>();
+        hand = new ArrayList<Integer>();
+        for (int id : message.cards) {
+            hand.add(id);
+        }
+
         opponents = new Array<Player>();
+        for (int i = 0; i < message.players.length; i++)
+        {
+            PlayerMessage player = message.players[i];
+            if (player.username.equals(username))
+            {
+                direction = player.direction;
+            }
+            else
+            {
+                opponents.add(new Player(player));
+            }
+        }
+
+        this.deckSize = message.deckSize;
+
+        pile = new ArrayList<Integer>();
+
+        this.turn = message.turn;
+
+        this.username = username;
     }
 
     public int getDeckSize() {
@@ -24,15 +53,31 @@ public class GameState {
         this.deckSize = deckSize;
     }
 
-    public Card getTopCard() {
-        return topCard;
+    public int getDirection() {
+        return direction;
     }
 
-    public void setTopCard(Card topCard) {
-        this.topCard = topCard;
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
-    public Array<Card> getHand() {
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public ArrayList<Integer> getHand() {
         return hand;
     }
 
@@ -40,11 +85,7 @@ public class GameState {
         return opponents;
     }
 
-    public Player.Direction getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Player.Direction direction) {
-        this.direction = direction;
+    public ArrayList<Integer> getPile() {
+        return pile;
     }
 }

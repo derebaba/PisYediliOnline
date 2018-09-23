@@ -19,6 +19,7 @@ public class PisClientListener implements ClientListener
 	private final PisYediliOnline game;
 	private List<UserPresence> connectedOpponents;
 	private Gson gson;
+	private String username;
 
 	public PisClientListener(final PisYediliOnline game)
 	{
@@ -55,10 +56,12 @@ public class PisClientListener implements ClientListener
 	public void onMatchmakeMatched(final MatchmakerMatched matchmakerMatched)
 	{
 		game.logger.info("found match with ID: " + matchmakerMatched.getMatchId());
-		((MainMenuScreen)game.getScreen()).setFoundMatch(true);
+
 
 		game.nakama.getSocket().joinMatch(matchmakerMatched.getMatchId());
 		game.logger.info("joining...");
+
+		username = matchmakerMatched.getSelf().getPresence().getUsername();
 	}
 
 	@Override
@@ -68,7 +71,10 @@ public class PisClientListener implements ClientListener
 		{
 			case GAME_INIT:
 				GameStartMessage message = gson.fromJson(new String(matchData.getData()), GameStartMessage.class);
+				game.state = new GameState(message, username);
 				game.logger.info("GameStartMessage = " + message);
+
+				((MainMenuScreen)game.getScreen()).setFoundMatch(true);
 			break;
 		}
 	}
@@ -78,7 +84,7 @@ public class PisClientListener implements ClientListener
 	{
 		game.logger.info("Present in match");
 
-		game.state = new GameState();
+
 /*
 		long opCode = 1;
 		String data = "{\"message\":\"Hello world\"}";

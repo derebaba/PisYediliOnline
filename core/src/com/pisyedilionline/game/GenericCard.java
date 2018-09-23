@@ -5,14 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 public class GenericCard extends BaseActor {
 
-    protected final GameScreen screen;
-
-    public GenericCard(Sprite sprite, final GameScreen screen)
+    public GenericCard(Sprite sprite)
     {
         super(sprite);
 
         this.sprite = sprite;
-        this.screen = screen;
 
         setSize(14, 21);
 

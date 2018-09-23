@@ -15,8 +15,8 @@ public class Card extends GenericCard implements Comparable<Card> {
     private int value, order;
 
     //Constructor for regular card
-    public Card(Sprite sprite, Suit suit, int value, final GameScreen screen, int order) {
-        super(sprite, screen);
+    public Card(Sprite sprite, Suit suit, int value, int order) {
+        super(sprite);
 
         selected = false;
         this.cSuit = suit;
@@ -26,10 +26,10 @@ public class Card extends GenericCard implements Comparable<Card> {
         addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                screen.playCard((Card) event.getTarget());
+                /*screen.playCard((Card) event.getTarget());
 
                 screen.game.logger.info("Played card: " + suit + " " + value);
-
+*/
                 event.handle();//the Stage will stop trying to handle this event
                 return true; //the inputmultiplexer will stop trying to handle this touch
             }

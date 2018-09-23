@@ -3,20 +3,17 @@ package com.pisyedilionline.game;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 
-public class Player extends BaseActor
+public class Player
 {
-    public enum Direction
-    {
-        NORTH, EAST, SOUTH, WEST
-    }
-
     private int cardCount = 0;
-    private String name = "";
-    private Direction direction;
+    private String username = "";
+    private int direction;
 
-    public Player(Sprite sprite)
+    public Player(PlayerMessage message)
     {
-        super(sprite);
+        this.username = message.username;
+        this.cardCount = message.cardCount;
+        this.direction = message.direction;
     }
 
     public int getCardCount() {
@@ -27,21 +24,19 @@ public class Player extends BaseActor
         this.cardCount = cardCount;
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Direction getDirection() {
+    public int getDirection() {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
+    public void setDirection(int direction) {
         this.direction = direction;
     }
 }

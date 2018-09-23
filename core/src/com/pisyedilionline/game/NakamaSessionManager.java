@@ -71,6 +71,7 @@ public class NakamaSessionManager
 			game.logger.info("soket kuruldu");
 			this.session = session;
 			game.setConnected(true);
+			session.getUsername();
 			return null;
 		};
 
