@@ -3,6 +3,7 @@ package com.pisyedilionline.screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
+import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.actor.Opponent;
@@ -18,18 +19,25 @@ public class GameScreen extends BaseScreen
 
 	private Array<Opponent> opponents;
 	private int deckSize = 0;
-	private ArrayList<Integer> pile;
 	private int direction;
 	private int turn;
 	private String username;
 
 	private AllCards allCards;
 	private Array<Card> hand;
+	private Array<Card> pile;
+	private Array<BaseCard> pool;
 
     public GameScreen(final PisYediliOnline game, GameStartMessage message, String username) {
         super(game);
 
 		allCards = new AllCards(game);
+		pile = new Array<Card>();
+		pool = new Array<>(52);
+		for (int i = 0; i < 52; i++)
+		{
+			pool.add(new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class))));
+		}
 
 		hand = new Array<Card>();
 		for (int id : message.getCards()) {
@@ -41,20 +49,23 @@ public class GameScreen extends BaseScreen
 		opponents = new Array<Opponent>();
 		for (int i = 0; i < message.getPlayers().length; i++)
 		{
-			PlayerMessage player = message.getPlayers()[i];
-			if (player.getUsername().equals(username))
+			PlayerMessage playerMessage = message.getPlayers()[i];
+			if (playerMessage.getUsername().equals(username))
 			{
-				direction = player.getDirection();
+				direction = playerMessage.getDirection();
 			}
 			else
 			{
-				opponents.add(new Opponent(player));
+				Opponent opponent = new Opponent(this, playerMessage);
+				opponents.add(opponent);
+				stage.addActor(opponent);
 			}
 		}
 
-		this.deckSize = message.getDeckSize();
+		//	TODO: sil
+		opponents.get(0).setPosition(80, 70);
 
-		pile = new ArrayList<Integer>();
+		this.deckSize = message.getDeckSize();
 
 		this.turn = message.getTurn();
 
@@ -98,7 +109,12 @@ public class GameScreen extends BaseScreen
         sortCards();
     }
 
-    private void sortCards()
+	public Array<BaseCard> getPool()
+	{
+		return pool;
+	}
+
+	private void sortCards()
     {
         hand.sort();
         for (int i = 0; i < hand.size; i++)
@@ -145,9 +161,6 @@ public class GameScreen extends BaseScreen
         game.font.draw(game.batch, Integer.toString(deckSize),62, 38);
         //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
-
-        //	sürekli maç oluşturuyor
-        //if (game.isConnected()) game.nakama.createMatch();
     }
 
     @Override

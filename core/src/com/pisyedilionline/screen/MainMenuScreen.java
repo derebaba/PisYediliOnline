@@ -11,16 +11,12 @@ import com.pisyedilionline.game.PisYediliOnline;
 public class MainMenuScreen extends BaseScreen
 {
 	TextButton findMatchButton;
-	Skin skin;
-	private boolean foundMatch = false;
 
 	public MainMenuScreen(final PisYediliOnline game)
 	{
 		super(game);
 
-		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-
-		findMatchButton = new TextButton("Mac bul", skin);
+		findMatchButton = new TextButton("Mac bul", game.skin);
 		stage.addActor(findMatchButton);
 
 		findMatchButton.setVisible(false);
@@ -44,13 +40,6 @@ public class MainMenuScreen extends BaseScreen
 			}
 		});
 	}
-
-	public void setFoundMatch(boolean foundMatch)
-	{
-		this.foundMatch = foundMatch;
-	}
-
-	public boolean getFoundMatch() { return foundMatch; }
 
 	@Override
 	public void render(float delta)

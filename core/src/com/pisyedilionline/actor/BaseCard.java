@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public abstract class BaseCard extends Actor
+public class BaseCard extends Actor
 {
     protected Sprite sprite;
 
-    protected BaseCard(Sprite sprite)
+    public BaseCard(Sprite sprite)
     {
         this.sprite = sprite;
 
