@@ -1,14 +1,15 @@
 package com.pisyedilionline.game;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.pisyedilionline.message.PlayerMessage;
 
-public class Player
+public class Opponent extends Actor
 {
     private int cardCount = 0;
     private String username = "";
     private int direction;
 
-    public Player(PlayerMessage message)
+    public Opponent(PlayerMessage message)
     {
         this.username = message.getUsername();
         this.cardCount = message.getCardCount();

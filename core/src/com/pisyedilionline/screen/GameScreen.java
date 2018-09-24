@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
+import com.pisyedilionline.game.Opponent;
 import com.pisyedilionline.game.PisYediliOnline;
-import com.pisyedilionline.game.Player;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.PlayerMessage;
 
@@ -16,7 +16,7 @@ public class GameScreen extends BaseScreen
 {
 	final Card.Suit[] SUITS = Card.Suit.values();
 
-	private Array<Player> opponents;
+	private Array<Opponent> opponents;
 	private int deckSize = 0;
 	private ArrayList<Integer> pile;
 	private int direction;
@@ -38,7 +38,7 @@ public class GameScreen extends BaseScreen
 			stage.addActor(card);
 		}
 
-		opponents = new Array<Player>();
+		opponents = new Array<Opponent>();
 		for (int i = 0; i < message.getPlayers().length; i++)
 		{
 			PlayerMessage player = message.getPlayers()[i];
@@ -48,7 +48,7 @@ public class GameScreen extends BaseScreen
 			}
 			else
 			{
-				opponents.add(new Player(player));
+				opponents.add(new Opponent(player));
 			}
 		}
 
@@ -77,7 +77,7 @@ public class GameScreen extends BaseScreen
 */
         Sprite opponentSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
         /*
-        opponent = new Player(opponentSprite);
+        opponent = new Opponent(opponentSprite);
         stage.addActor(opponent);
         opponent.setPosition(70, 70);
         dealHands();
