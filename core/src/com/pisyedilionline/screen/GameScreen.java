@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
-import com.pisyedilionline.game.Opponent;
+import com.pisyedilionline.actor.Opponent;
 import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.PlayerMessage;

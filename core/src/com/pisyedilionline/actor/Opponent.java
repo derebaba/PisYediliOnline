@@ -1,7 +1,9 @@
-package com.pisyedilionline.game;
+package com.pisyedilionline.actor;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.pisyedilionline.message.PlayerMessage;
+import org.jetbrains.annotations.NotNull;
 
 public class Opponent extends Actor
 {
@@ -9,7 +11,7 @@ public class Opponent extends Actor
     private String username = "";
     private int direction;
 
-    public Opponent(PlayerMessage message)
+    public Opponent(@NotNull PlayerMessage message)
     {
         this.username = message.getUsername();
         this.cardCount = message.getCardCount();
@@ -39,4 +41,10 @@ public class Opponent extends Actor
     public void setDirection(int direction) {
         this.direction = direction;
     }
+
+    @Override
+	public void draw(Batch batch, float parentAlpha)
+	{
+
+	}
 }

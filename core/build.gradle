@@ -28,3 +28,7 @@ buildConfig {
 eclipse.project {
     name = appName + "-core"
 }
+
+dependencies {
+    implementation 'org.jetbrains:annotations:15.0'
+}
