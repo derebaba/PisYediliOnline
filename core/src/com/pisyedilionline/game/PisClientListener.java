@@ -1,5 +1,7 @@
 package com.pisyedilionline.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.google.gson.Gson;
 import com.heroiclabs.nakama.*;
 import com.heroiclabs.nakama.Error;
@@ -7,6 +9,7 @@ import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.Opcode;
+import com.pisyedilionline.screen.GameScreen;
 import com.pisyedilionline.screen.MainMenuScreen;
 
 import java.util.ArrayList;
@@ -69,10 +72,14 @@ public class PisClientListener implements ClientListener
 		{
 			case GAME_INIT:
 				GameStartMessage message = gson.fromJson(new String(matchData.getData()), GameStartMessage.class);
-				game.state = new GameState(message, username);
 				game.logger.info("GameStartMessage = " + message);
 
-				((MainMenuScreen)game.getScreen()).setFoundMatch(true);
+				Gdx.app.postRunnable(() ->
+				{
+					Screen screen = game.getScreen();
+					game.setScreen(new GameScreen(game, message, username));
+					screen.dispose();
+				});
 			break;
 		}
 	}

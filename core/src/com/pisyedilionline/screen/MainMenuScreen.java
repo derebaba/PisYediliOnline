@@ -56,11 +56,6 @@ public class MainMenuScreen extends BaseScreen
 	public void render(float delta)
 	{
 		super.render(delta);
-		if (foundMatch)
-		{
-			game.setScreen(new GameScreen(game));
-			dispose();
-		}
 
 		findMatchButton.setVisible(game.isConnected());
 

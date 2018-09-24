@@ -6,21 +6,60 @@ import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.game.PisYediliOnline;
+import com.pisyedilionline.game.Player;
+import com.pisyedilionline.message.GameStartMessage;
+import com.pisyedilionline.message.PlayerMessage;
+
+import java.util.ArrayList;
 
 public class GameScreen extends BaseScreen
 {
-
 	final Card.Suit[] SUITS = Card.Suit.values();
+
+	private Array<Player> opponents;
+	private int deckSize = 0;
+	private ArrayList<Integer> pile;
+	private int direction;
+	private int turn;
+	private String username;
 
 	private AllCards allCards;
 	private Array<Card> hand;
-    private int turn = 0;
 
-    public GameScreen(final PisYediliOnline game) {
+    public GameScreen(final PisYediliOnline game, GameStartMessage message, String username) {
         super(game);
 
-        allCards = new AllCards(game);
-        hand = new Array<Card>();
+		allCards = new AllCards(game);
+
+		hand = new Array<Card>();
+		for (int id : message.getCards()) {
+			Card card = allCards.getCardById(id);
+			hand.add(card);
+			stage.addActor(card);
+		}
+
+		opponents = new Array<Player>();
+		for (int i = 0; i < message.getPlayers().length; i++)
+		{
+			PlayerMessage player = message.getPlayers()[i];
+			if (player.getUsername().equals(username))
+			{
+				direction = player.getDirection();
+			}
+			else
+			{
+				opponents.add(new Player(player));
+			}
+		}
+
+		this.deckSize = message.getDeckSize();
+
+		pile = new ArrayList<Integer>();
+
+		this.turn = message.getTurn();
+
+		this.username = username;
+
 
         //  Prepare card stack to draw
         Sprite stackSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
@@ -48,12 +87,14 @@ public class GameScreen extends BaseScreen
 
     public void update()
     {
+    	/*
         for (int id : game.state.getHand())
         {
         	Card card = allCards.getCardById(id);
             hand.add(allCards.getCardById(id));
 			stage.addActor(card);
         }
+        */
         sortCards();
     }
 
@@ -101,7 +142,7 @@ public class GameScreen extends BaseScreen
         super.render(delta);
 
         game.batch.begin();
-        game.font.draw(game.batch, Integer.toString(game.state.getDeckSize()),62, 38);
+        game.font.draw(game.batch, Integer.toString(deckSize),62, 38);
         //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
 
