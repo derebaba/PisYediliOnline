@@ -1,10 +1,10 @@
-package com.pisyedilionline.game;
+package com.pisyedilionline.actor;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class Card extends GenericCard implements Comparable<Card> {
+public class Card extends BaseActor implements Comparable<Card> {
 
     public enum Suit {
 		CLUBS, DIAMONDS, HEARTS, SPADES,

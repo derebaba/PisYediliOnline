@@ -1,7 +1,6 @@
 package com.pisyedilionline.game;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.utils.Array;
+import com.pisyedilionline.message.PlayerMessage;
 
 public class Player
 {
@@ -11,9 +10,9 @@ public class Player
 
     public Player(PlayerMessage message)
     {
-        this.username = message.username;
-        this.cardCount = message.cardCount;
-        this.direction = message.direction;
+        this.username = message.getUsername();
+        this.cardCount = message.getCardCount();
+        this.direction = message.getDirection();
     }
 
     public int getCardCount() {

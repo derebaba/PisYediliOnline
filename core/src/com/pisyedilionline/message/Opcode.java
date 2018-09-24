@@ -1,4 +1,4 @@
-package com.pisyedilionline.game;
+package com.pisyedilionline.message;
 
 public enum Opcode {
     GAME_INIT(1);

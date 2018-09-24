@@ -1,12 +1,14 @@
-package com.pisyedilionline.game;
+package com.pisyedilionline.screen;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.pisyedilionline.game.AllCards;
+import com.pisyedilionline.actor.Card;
+import com.pisyedilionline.game.PisYediliOnline;
 
-public class GameScreen extends BaseScreen {
+public class GameScreen extends BaseScreen
+{
 
 	final Card.Suit[] SUITS = Card.Suit.values();
 
@@ -20,14 +22,9 @@ public class GameScreen extends BaseScreen {
         allCards = new AllCards(game);
         hand = new Array<Card>();
 
-        for (Card card : allCards.getCardDeck())
-        {
-            stage.addActor(card);
-        }
         //  Prepare card stack to draw
         Sprite stackSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
         /*
-        cardStack = new GenericCard(stackSprite, this);
         stage.addActor(cardStack);
         cardStack.setPosition(60, 40);
         cardStack.addListener(new ClickListener(){
@@ -53,7 +50,9 @@ public class GameScreen extends BaseScreen {
     {
         for (int id : game.state.getHand())
         {
+        	Card card = allCards.getCardById(id);
             hand.add(allCards.getCardById(id));
+			stage.addActor(card);
         }
         sortCards();
     }

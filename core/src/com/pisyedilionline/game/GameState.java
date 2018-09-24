@@ -1,6 +1,9 @@
 package com.pisyedilionline.game;
 
 import com.badlogic.gdx.utils.Array;
+import com.pisyedilionline.message.GameStartMessage;
+import com.pisyedilionline.message.PlayerMessage;
+import com.pisyedilionline.screen.GameScreen;
 
 import java.util.ArrayList;
 
@@ -18,17 +21,17 @@ public class GameState {
     public GameState(GameStartMessage message, String username)
     {
         hand = new ArrayList<Integer>();
-        for (int id : message.cards) {
+        for (int id : message.getCards()) {
             hand.add(id);
         }
 
         opponents = new Array<Player>();
-        for (int i = 0; i < message.players.length; i++)
+        for (int i = 0; i < message.getPlayers().length; i++)
         {
-            PlayerMessage player = message.players[i];
-            if (player.username.equals(username))
+            PlayerMessage player = message.getPlayers()[i];
+            if (player.getUsername().equals(username))
             {
-                direction = player.direction;
+                direction = player.getDirection();
             }
             else
             {
@@ -36,11 +39,11 @@ public class GameState {
             }
         }
 
-        this.deckSize = message.deckSize;
+        this.deckSize = message.getDeckSize();
 
         pile = new ArrayList<Integer>();
 
-        this.turn = message.turn;
+        this.turn = message.getTurn();
 
         this.username = username;
     }

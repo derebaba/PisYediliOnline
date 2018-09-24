@@ -1,8 +1,9 @@
-package com.pisyedilionline.game;
+package com.pisyedilionline.screen;
 
-import com.badlogic.gdx.Gdx;
+import com.pisyedilionline.game.PisYediliOnline;
 
-public class SplashScreen extends BaseScreen {
+public class SplashScreen extends BaseScreen
+{
 
     public SplashScreen(final PisYediliOnline game) {
         super(game);

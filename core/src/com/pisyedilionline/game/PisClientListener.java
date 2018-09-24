@@ -1,18 +1,16 @@
 package com.pisyedilionline.game;
 
 import com.google.gson.Gson;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.heroiclabs.nakama.*;
 import com.heroiclabs.nakama.Error;
 import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
+import com.pisyedilionline.message.GameStartMessage;
+import com.pisyedilionline.message.Opcode;
+import com.pisyedilionline.screen.MainMenuScreen;
 
-import javax.xml.bind.DatatypeConverter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static com.pisyedilionline.game.Opcode.GAME_INIT;
 
 public class PisClientListener implements ClientListener
 {

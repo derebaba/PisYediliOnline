@@ -1,4 +1,4 @@
-package com.pisyedilionline.game;
+package com.pisyedilionline.actor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
