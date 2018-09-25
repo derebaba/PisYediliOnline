@@ -63,7 +63,7 @@ public class GameScreen extends BaseScreen
 		}
 
 		//	TODO: sil
-		opponents.get(0).setPosition(80, 70);
+		opponents.get(0).setPosition(30, 65);
 
 		this.deckSize = message.getDeckSize();
 
@@ -121,7 +121,7 @@ public class GameScreen extends BaseScreen
         {
             Card card = hand.get(i);
             card.setZIndex(i);
-            card.setPosition(20 + 10 * i, 5);
+            card.setPosition(30 + 10 * i, 5);
             card.setBounds(card.getX(), card.getY(),
                     card.getSprite().getWidth(), card.getSprite().getHeight());
         }

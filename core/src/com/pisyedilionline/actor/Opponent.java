@@ -1,24 +1,18 @@
 package com.pisyedilionline.actor;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.utils.Array;
-import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.PlayerMessage;
 import com.pisyedilionline.screen.GameScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class Opponent extends Actor
+public class Opponent extends Group
 {
 	private GameScreen screen;
 
     private int cardCount = 0;
     private String username = "";
     private int direction;
-    private Array<BaseCard> cards;
 
     public Opponent(GameScreen screen, @NotNull PlayerMessage message)
     {
@@ -27,21 +21,24 @@ public class Opponent extends Actor
         this.cardCount = message.getCardCount();
         this.direction = message.getDirection();
 
-		cards = new Array<BaseCard>();
+		setTransform(true);
+
+		for (int i = 0; i < cardCount; i++)
+		{
+			BaseCard card = screen.getPool().pop();
+			addActor(card);
+		}
 
 		positionCards();
     }
 
     private void positionCards()
 	{
-		for (int i = 0; i < cardCount; i++)
+		for (int i = 0; i < getChildren().size; i++)
 		{
-			BaseCard card = screen.getPool().pop();
-			cards.add(card);
+			Actor card = getChildren().get(i);
 			card.setZIndex(i);
-			card.setPosition(20 + 10 * i, 70);
-			card.setBounds(card.getX(), card.getY(),
-					card.getSprite().getWidth(), card.getSprite().getHeight());
+			card.setPosition(10 * i, 0);
 		}
 	}
 
@@ -68,13 +65,4 @@ public class Opponent extends Actor
     public void setDirection(int direction) {
         this.direction = direction;
     }
-
-    @Override
-	public void draw(Batch batch, float parentAlpha)
-	{
-		for (BaseCard card : cards)
-		{
-			card.draw(batch, parentAlpha);
-		}
-	}
 }
