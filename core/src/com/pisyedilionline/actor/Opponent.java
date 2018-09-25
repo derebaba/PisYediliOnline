@@ -38,7 +38,7 @@ public class Opponent extends Group
 		{
 			Actor card = getChildren().get(i);
 			card.setZIndex(i);
-			card.setPosition(10 * i, 0);
+			card.setPosition(5 * i, 0);
 		}
 	}
 

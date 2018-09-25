@@ -53,6 +53,7 @@ public class GameScreen extends BaseScreen
 			if (playerMessage.getUsername().equals(username))
 			{
 				direction = playerMessage.getDirection();
+				game.logger.info("Direction: " + direction);
 			}
 			else
 			{
@@ -62,8 +63,31 @@ public class GameScreen extends BaseScreen
 			}
 		}
 
-		//	TODO: sil
-		opponents.get(0).setPosition(30, 65);
+		//	set position of opponents
+		if (opponents.size == 1)
+		{
+			opponents.get(0).setPosition(30, 65);
+		}
+		else
+		{
+			for (Opponent opponent : opponents)
+			{
+				if (opponent.getDirection() == (direction + 1) % message.getPlayers().length)
+				{
+					opponent.setPosition(0, 80);
+					opponent.rotateBy(-90);
+				}
+				else if (opponent.getDirection() == (direction + 2) % message.getPlayers().length)
+				{
+					opponent.setPosition(30, 69);
+				}
+				else if (opponent.getDirection() == (direction + 3) % message.getPlayers().length)
+				{
+					opponent.setPosition(160, 10);
+					opponent.rotateBy(90);
+				}
+			}
+		}
 
 		this.deckSize = message.getDeckSize();
 
