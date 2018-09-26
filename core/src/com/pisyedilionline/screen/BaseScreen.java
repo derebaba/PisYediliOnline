@@ -45,7 +45,7 @@ public abstract class BaseScreen implements Screen {
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-
+		game.shapeRenderer.setProjectionMatrix(camera.combined);
         stage.draw();
     }
 

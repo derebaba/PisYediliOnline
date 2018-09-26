@@ -32,6 +32,8 @@ public class GameScreen extends BaseScreen
 	private Array<Card> pile;
 	private Array<BaseCard> pool;
 
+	private float turnX = 0, turnY = 0;	//	turnün kimde olduğunu gösteren yuvarlağın pozisyonu
+
     public GameScreen(final PisYediliOnline game, GameStartMessage message, String username) {
         super(game);
 
@@ -141,6 +143,21 @@ public class GameScreen extends BaseScreen
         }
         */
         sortCards();
+
+		for (Opponent opponent : opponents)
+		{
+			if (turn == opponent.getDirection())
+			{
+				turnX = opponent.getX();
+				turnY = opponent.getY();
+			}
+		}
+
+		if (turn == direction)
+		{
+			turnX = 80;
+			turnY = 5;
+		}
     }
 
 	public Array<BaseCard> getPool()
@@ -197,6 +214,9 @@ public class GameScreen extends BaseScreen
         game.batch.end();
 
 		game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		game.shapeRenderer.setColor(1, 0, 0, 1);
+
+		game.shapeRenderer.circle(turnX, turnY, 5);
 
 		game.shapeRenderer.end();
     }
