@@ -9,6 +9,7 @@ public class GameStartMessage {
     private int[] cards;
 	private PlayerMessage[] players;
 	private int turn, deckSize;
+	private boolean clockwise;
 
     @Override
     public String toString() {
@@ -33,5 +34,10 @@ public class GameStartMessage {
 	public int getDeckSize()
 	{
 		return deckSize;
+	}
+
+	public boolean isClockwise()
+	{
+		return clockwise;
 	}
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Logger;
 import com.pisyedilionline.screen.SplashScreen;
@@ -15,6 +16,7 @@ import com.pisyedilionline.screen.SplashScreen;
 
 public class PisYediliOnline extends Game {
 
+	public ShapeRenderer shapeRenderer;
     public Logger logger;
     public AssetManager assetManager;
     public Preferences prefs;
@@ -29,6 +31,8 @@ public class PisYediliOnline extends Game {
 
 	@Override
 	public void create() {
+		shapeRenderer = new ShapeRenderer();
+
         logger = new Logger("Genel");
 		logger.setLevel(Logger.DEBUG);
 
@@ -70,6 +74,8 @@ public class PisYediliOnline extends Game {
 	public void dispose() {
 		batch.dispose();
 		font.dispose();
+		shapeRenderer.dispose();
+		assetManager.dispose();
 		this.getScreen().dispose();
 	}
 

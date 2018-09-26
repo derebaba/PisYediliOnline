@@ -2,6 +2,7 @@ package com.pisyedilionline.screen;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
@@ -17,12 +18,15 @@ public class GameScreen extends BaseScreen
 {
 	final Card.Suit[] SUITS = Card.Suit.values();
 
+	//	game variables
 	private Array<Opponent> opponents;
 	private int deckSize = 0;
-	private int direction;
-	private int turn;
+	private int direction;	//	this player's chair position
+	private int turn;	//	whose turn is it
+	private boolean clockwise = true;
 	private String username;
 
+	//	cards
 	private AllCards allCards;
 	private Array<Card> hand;
 	private Array<Card> pile;
@@ -57,7 +61,13 @@ public class GameScreen extends BaseScreen
 			}
 			else
 			{
-				Opponent opponent = new Opponent(this, playerMessage);
+				Opponent opponent = new Opponent(game, playerMessage);
+
+				for (int j = 0; j < playerMessage.getCardCount(); j++)
+				{
+					opponent.addCard(pool.pop());
+				}
+
 				opponents.add(opponent);
 				stage.addActor(opponent);
 			}
@@ -90,7 +100,7 @@ public class GameScreen extends BaseScreen
 		}
 
 		this.deckSize = message.getDeckSize();
-
+		this.clockwise = message.isClockwise();
 		this.turn = message.getTurn();
 
 		this.username = username;
@@ -181,10 +191,14 @@ public class GameScreen extends BaseScreen
     public void render(float delta) {
         super.render(delta);
 
-        game.batch.begin();
+		game.batch.begin();
         game.font.draw(game.batch, Integer.toString(deckSize),62, 38);
         //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
+
+		game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+		game.shapeRenderer.end();
     }
 
     @Override
@@ -206,7 +220,6 @@ public class GameScreen extends BaseScreen
     public void dispose()
     {
         super.dispose();
-        game.assetManager.dispose();
     }
 
 
