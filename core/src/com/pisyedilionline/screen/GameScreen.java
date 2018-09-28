@@ -3,6 +3,8 @@ package com.pisyedilionline.screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
@@ -10,6 +12,7 @@ import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.actor.Opponent;
 import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.GameStartMessage;
+import com.pisyedilionline.message.Opcode;
 import com.pisyedilionline.message.PlayerMessage;
 
 import java.util.ArrayList;
@@ -24,17 +27,17 @@ public class GameScreen extends BaseScreen
 	private int direction;	//	this player's chair position
 	private int turn;	//	whose turn is it
 	private boolean clockwise = true;
-	private String username;
+	private String username, matchId;
 
 	//	cards
 	private AllCards allCards;
-	private Array<Card> hand;
-	private Array<Card> pile;
+	private Array<Card> hand, pile;
 	private Array<BaseCard> pool;
+	private BaseCard deck;
 
 	private float turnX = 0, turnY = 0;	//	turnün kimde olduğunu gösteren yuvarlağın pozisyonu
 
-    public GameScreen(final PisYediliOnline game, GameStartMessage message, String username) {
+    public GameScreen(final PisYediliOnline game, GameStartMessage message, String username, String matchId) {
         super(game);
 
 		allCards = new AllCards(game);
@@ -45,6 +48,7 @@ public class GameScreen extends BaseScreen
 			pool.add(new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class))));
 		}
 
+		//	initialize hand
 		hand = new Array<Card>();
 		for (int id : message.getCards()) {
 			Card card = allCards.getCardById(id);
@@ -52,6 +56,7 @@ public class GameScreen extends BaseScreen
 			stage.addActor(card);
 		}
 
+		//	initialize opponents
 		opponents = new Array<Opponent>();
 		for (int i = 0; i < message.getPlayers().length; i++)
 		{
@@ -104,12 +109,15 @@ public class GameScreen extends BaseScreen
 		this.deckSize = message.getDeckSize();
 		this.clockwise = message.isClockwise();
 		this.turn = message.getTurn();
-
+		this.matchId = matchId;
 		this.username = username;
 
 
-        //  Prepare card stack to draw
-        Sprite stackSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
+        //  Prepare card deck to draw
+		deck = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
+        stage.addActor(deck);
+        deck.setPosition(70, 35);
+
         /*
         stage.addActor(cardStack);
         cardStack.setPosition(60, 40);
@@ -122,7 +130,7 @@ public class GameScreen extends BaseScreen
             }
         });
 */
-        Sprite opponentSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
+
         /*
         opponent = new Opponent(opponentSprite);
         stage.addActor(opponent);
@@ -144,19 +152,31 @@ public class GameScreen extends BaseScreen
         */
         sortCards();
 
-		for (Opponent opponent : opponents)
+		if (turn == direction)
 		{
-			if (turn == opponent.getDirection())
+			turnX = 80;
+			turnY = 5;
+		}
+		else
+		{
+			for (Opponent opponent : opponents)
 			{
-				turnX = opponent.getX();
-				turnY = opponent.getY();
+				if (turn == opponent.getDirection())
+				{
+					turnX = opponent.getX();
+					turnY = opponent.getY();
+				}
 			}
 		}
 
 		if (turn == direction)
 		{
-			turnX = 80;
-			turnY = 5;
+			deck.addListener(event ->
+			{
+				game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
+				deck.clearListeners();
+				return true;
+			});
 		}
     }
 
@@ -179,15 +199,12 @@ public class GameScreen extends BaseScreen
     }
 
     //  TODO: kendi sırası değilse false dönsün
-    /*
-    public void drawCard()
+
+    public void drawCard(int cardId)
     {
-        Card card = cardDeck.pop();
-        stage.addActor(card);
-        hand.add(card);
-        sortCards();
+        hand.add(allCards.getCardById(cardId));
     }
-*/
+
     public void playCard(Card card)
     {
         hand.removeValue(card, false);

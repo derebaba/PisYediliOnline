@@ -7,6 +7,7 @@ import com.heroiclabs.nakama.*;
 import com.heroiclabs.nakama.Error;
 import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
+import com.pisyedilionline.message.DrawCardMessage;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.Opcode;
 import com.pisyedilionline.screen.GameScreen;
@@ -18,6 +19,7 @@ import java.util.List;
 public class PisClientListener implements ClientListener
 {
 	private final PisYediliOnline game;
+	private GameScreen gameScreen;
 	private List<UserPresence> connectedOpponents;
 	private Gson gson;
 	private String username;
@@ -33,11 +35,13 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onDisconnect(Throwable throwable)
 	{
+		game.logger.error("Disconnected");
 		throwable.printStackTrace();
 	}
 
     @Override
     public void onError(Error error) {
+		game.logger.error("Client listener error");
 		error.printStackTrace();
     }
 
@@ -71,14 +75,26 @@ public class PisClientListener implements ClientListener
 		switch (Opcode.getById(matchData.getOpCode()))
 		{
 			case GAME_INIT:
-				GameStartMessage message = gson.fromJson(new String(matchData.getData()), GameStartMessage.class);
-				game.logger.info("GameStartMessage = " + message);
+				GameStartMessage gameStartMessage = gson.fromJson(new String(matchData.getData()), GameStartMessage.class);
+				game.logger.info("GameStartMessage = " + gameStartMessage);
 
 				Gdx.app.postRunnable(() ->
 				{
 					Screen screen = game.getScreen();
-					game.setScreen(new GameScreen(game, message, username));
+					GameScreen gameScreen = new GameScreen(game, gameStartMessage, username, matchData.getMatchId());
+					this.gameScreen = gameScreen;
+					game.setScreen(gameScreen);
 					screen.dispose();
+				});
+			break;
+			case DRAW_CARD:
+				DrawCardMessage drawCardMessage = gson.fromJson(new String(matchData.getData()), DrawCardMessage.class);
+
+				game.logger.info("drawCardMessage = " + drawCardMessage);
+
+				Gdx.app.postRunnable(() ->
+				{
+					gameScreen.drawCard(drawCardMessage.getCard());
 				});
 			break;
 		}
