@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
@@ -145,6 +147,11 @@ public class GameScreen extends BaseScreen
         dealHands();
 */
         update();
+
+		if (turn == direction)
+		{
+			enableDeck();
+		}
     }
 
     public void update()
@@ -175,39 +182,13 @@ public class GameScreen extends BaseScreen
 				}
 			}
 		}
-
-		if (turn == direction)
-		{
-			deck.addListener(event ->
-			{
-				game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
-				deck.clearListeners();
-				return true;
-			});
-		}
-    }
-
-	public Array<BaseCard> getPool()
-	{
-		return pool;
-	}
-
-	private void sortCards()
-    {
-        hand.sort();
-        for (int i = 0; i < hand.size; i++)
-        {
-            Card card = hand.get(i);
-            card.setZIndex(i);
-            card.setPosition(30 + 10 * i, 5);
-            card.setBounds(card.getX(), card.getY(),
-                    card.getSprite().getWidth(), card.getSprite().getHeight());
-        }
     }
 
     public void drawCard(int cardId)
     {
         hand.add(allCards.getCardById(cardId));
+        sortCards();
+        enableDeck();
     }
 
     public void playCard(Card card)
@@ -219,8 +200,41 @@ public class GameScreen extends BaseScreen
         sortCards();
     }
 
+	//	PRIVATE METHODS
+	private void enableDeck()
+	{
+		deck.addListener(new InputListener()
+		{
+			@Override
+			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				game.logger.info("Sending draw card message");
 
+				game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
 
+				//	clear listeners until server sends the card
+				deck.clearListeners();
+
+				event.handle();
+				return true;
+			}
+		});
+	}
+
+	//	Sort cards in the hand
+	private void sortCards()
+	{
+		hand.sort();
+		for (int i = 0; i < hand.size; i++)
+		{
+			Card card = hand.get(i);
+			card.setZIndex(i);
+			card.setPosition(30 + 10 * i, 5);
+			card.setBounds(card.getX(), card.getY(),
+					card.getSprite().getWidth(), card.getSprite().getHeight());
+		}
+	}
+
+	//	SCREEN OVERRIDE METHODS
     @Override
     public void show() {
 
