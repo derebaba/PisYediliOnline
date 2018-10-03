@@ -95,6 +95,7 @@ public class PisClientListener implements ClientListener
 				Gdx.app.postRunnable(() ->
 				{
 					gameScreen.drawCard(drawCardMessage.getCard());
+					gameScreen.update();
 				});
 			break;
 		}

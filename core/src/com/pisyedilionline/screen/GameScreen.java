@@ -40,8 +40,16 @@ public class GameScreen extends BaseScreen
     public GameScreen(final PisYediliOnline game, GameStartMessage message, String username, String matchId) {
         super(game);
 
+        //	add deck to stage
 		allCards = new AllCards(game);
+		for (Card card : allCards.getCardDeck())
+		{
+			stage.addActor(card);
+		}
+
 		pile = new Array<Card>();
+
+		//	Create pool of upside-down cards for opponent hands
 		pool = new Array<>(52);
 		for (int i = 0; i < 52; i++)
 		{
@@ -53,7 +61,6 @@ public class GameScreen extends BaseScreen
 		for (int id : message.getCards()) {
 			Card card = allCards.getCardById(id);
 			hand.add(card);
-			stage.addActor(card);
 		}
 
 		//	initialize opponents
@@ -197,8 +204,6 @@ public class GameScreen extends BaseScreen
                     card.getSprite().getWidth(), card.getSprite().getHeight());
         }
     }
-
-    //  TODO: kendi sırası değilse false dönsün
 
     public void drawCard(int cardId)
     {
