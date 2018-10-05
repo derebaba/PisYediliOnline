@@ -93,11 +93,11 @@ public class PisClientListener implements ClientListener
 				});
 			break;
 			case DRAW_CARD:
-				DrawCardMessage drawCardMessage = gson.fromJson(data, DrawCardMessage.class);
+				int drawnCard = Integer.parseInt(data);
 
 				Gdx.app.postRunnable(() ->
 				{
-					gameScreen.drawCard(drawCardMessage.getCard());
+					gameScreen.drawCard(drawnCard);
 					gameScreen.update();
 				});
 			break;
