@@ -72,11 +72,15 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onMatchData(final MatchData matchData)
 	{
+		String data = new String(matchData.getData());
+
+		game.logger.info("Received message with opCode " + matchData.getOpCode());
+		game.logger.info("Message data: " + data);
+
 		switch (Opcode.getById(matchData.getOpCode()))
 		{
 			case GAME_INIT:
-				GameStartMessage gameStartMessage = gson.fromJson(new String(matchData.getData()), GameStartMessage.class);
-				game.logger.info("GameStartMessage = " + gameStartMessage);
+				GameStartMessage gameStartMessage = gson.fromJson(data, GameStartMessage.class);
 
 				Gdx.app.postRunnable(() ->
 				{
@@ -88,15 +92,16 @@ public class PisClientListener implements ClientListener
 				});
 			break;
 			case DRAW_CARD:
-				DrawCardMessage drawCardMessage = gson.fromJson(new String(matchData.getData()), DrawCardMessage.class);
-
-				game.logger.info("drawCardMessage = " + drawCardMessage);
+				DrawCardMessage drawCardMessage = gson.fromJson(data, DrawCardMessage.class);
 
 				Gdx.app.postRunnable(() ->
 				{
 					gameScreen.drawCard(drawCardMessage.getCard());
 					//gameScreen.update();
 				});
+			break;
+			case DRAW_CARD_BROADCAST:
+				int direction = Integer.parseInt(data);
 			break;
 		}
 	}

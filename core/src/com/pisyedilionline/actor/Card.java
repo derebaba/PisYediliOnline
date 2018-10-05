@@ -14,7 +14,6 @@ public class Card extends BaseCard implements Comparable<Card> {
     private boolean selected;
     private int value, order;
 
-    //Constructor for regular card
     public Card(Sprite sprite, Suit suit, int value, int order) {
         super(sprite);
 

@@ -1,5 +1,6 @@
 package com.pisyedilionline.screen;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -25,15 +26,20 @@ public class GameScreen extends BaseScreen
 {
 	final Card.Suit[] SUITS = Card.Suit.values();
 
-	//	game variables
+	//	GAME VARIABLES
 	private Array<Opponent> opponents;
 	private int deckSize = 0;
 	private int direction;	//	this player's chair position
 	private int turn;	//	whose turn is it
+
+	/**
+	 * how many turns have passed (starts from 1 because lua)
+	 */
+	private int turnCount = 0;
 	private boolean clockwise = true;
 	private String username, matchId;
 
-	//	cards
+	//	CARDS
 	private AllCards allCards;
 	private Array<Card> hand, pile;
 	private Array<BaseCard> pool;
@@ -130,27 +136,8 @@ public class GameScreen extends BaseScreen
         //  Prepare card deck to draw
 		deck = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
         stage.addActor(deck);
-        deck.setPosition(70, 35);
+        deck.setPosition(55, 40);
 
-        /*
-        stage.addActor(cardStack);
-        cardStack.setPosition(60, 40);
-        cardStack.addListener(new ClickListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                drawCard();
-                event.handle();
-                return true;
-            }
-        });
-*/
-
-        /*
-        opponent = new Opponent(opponentSprite);
-        stage.addActor(opponent);
-        opponent.setPosition(70, 70);
-        dealHands();
-*/
         update();
 
 		if (turn == direction)
@@ -161,15 +148,33 @@ public class GameScreen extends BaseScreen
 
     public void update()
     {
-    	/*
-        for (int id : game.state.getHand())
-        {
-        	Card card = allCards.getCardById(id);
-            hand.add(allCards.getCardById(id));
-			stage.addActor(card);
-        }
-        */
         sortCards();
+
+        for (Card card: hand)
+		{
+			if (turnCount < opponents.size + 1)
+			{
+				//	first round
+				if (card.getSuit() == Card.Suit.CLUBS)
+				{
+					card.getSprite().setColor(Color.YELLOW);
+					card.addListener(new InputListener()
+					{
+						@Override
+						public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+						{
+							playCard((Card) event.getTarget());
+							return true;
+						}
+					});
+				}
+			}
+			else
+			{
+				//	not first round
+				Card topCard = pile.peek();
+			}
+		}
 
 		if (turn == direction)
 		{
@@ -196,16 +201,16 @@ public class GameScreen extends BaseScreen
         enableDeck();
     }
 
-    public void playCard(Card card)
-    {
-        hand.removeValue(card, false);
-        card.setPosition(80, 40);
-        card.setZIndex(100 + turn++);   //  100 is arbitrary
-        card.clearListeners();
-        sortCards();
-    }
-
 	//	PRIVATE METHODS
+	private void playCard(Card card)
+	{
+		hand.removeValue(card, false);
+		card.setPosition(80, 40);
+		card.setZIndex(100 + turnCount++);   //  100 is arbitrary
+		card.clearListeners();
+		sortCards();
+	}
+
 	private void enableDeck()
 	{
 		deck.addListener(new InputListener()
@@ -232,7 +237,9 @@ public class GameScreen extends BaseScreen
 		});
 	}
 
-	//	Sort cards in the hand
+	/**
+	 * Sort and position cards in the hand
+	 */
 	private void sortCards()
 	{
 		hand.sort();

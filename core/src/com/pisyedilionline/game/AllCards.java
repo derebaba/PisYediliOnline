@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.Card;
+import org.jetbrains.annotations.NotNull;
 
 public class AllCards {
 
@@ -12,7 +13,7 @@ public class AllCards {
     private Array<Card> cardDeck;
     private Texture cardSheet;
 
-    public AllCards(final PisYediliOnline game)
+    public AllCards(@NotNull final PisYediliOnline game)
     {
         this.game = game;
 
@@ -30,10 +31,11 @@ public class AllCards {
         return cardDeck;
     }
 
-    /**
-     * Load card sprites from image. Assign card values and suits. Return card deck in an array.
-     */
-    private Array<Card> loadCards() {
+	/**
+	 * Load card sprites from image. Assign card values and suits.
+	 * @return	Card deck in an array
+	 */
+	private Array<Card> loadCards() {
         TextureRegion region;
         Sprite cardSprite;
 
