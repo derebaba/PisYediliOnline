@@ -60,8 +60,9 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onMatchmakeMatched(final MatchmakerMatched matchmakerMatched)
 	{
-		game.logger.info("found match with ID: " + matchmakerMatched.getMatchId());
+		game.matchId = matchmakerMatched.getMatchId();
 
+		game.logger.info("found match with ID: " + matchmakerMatched.getMatchId());
 
 		game.nakama.getSocket().joinMatch(matchmakerMatched.getMatchId());
 		game.logger.info("joining...");
@@ -97,7 +98,7 @@ public class PisClientListener implements ClientListener
 				Gdx.app.postRunnable(() ->
 				{
 					gameScreen.drawCard(drawCardMessage.getCard());
-					//gameScreen.update();
+					gameScreen.update();
 				});
 			break;
 			case DRAW_CARD_BROADCAST:

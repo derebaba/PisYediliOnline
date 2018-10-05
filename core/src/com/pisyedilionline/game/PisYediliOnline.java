@@ -24,6 +24,7 @@ public class PisYediliOnline extends Game {
 	public SpriteBatch batch;
 	public BitmapFont font;
 	public Skin skin;
+	public String matchId = "";
 
 	public NakamaSessionManager nakama;
 

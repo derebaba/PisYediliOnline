@@ -53,7 +53,7 @@ public class AllCards {
             cardSprite = new Sprite(region);
 
             //Keeps track of which card in the suit is being loaded
-            int value = (i % 13) + 1;
+            int value = i % 13;
 
             //Keeps track of the suit of the card being loaded
             int suitKey = i / 13;
@@ -70,7 +70,7 @@ public class AllCards {
                 suit = Card.Suit.SPADES;
             }
 
-            deck.add(new Card(cardSprite, suit, value,suitKey * 15 + value));
+            deck.add(new Card(cardSprite, suit, value,suitKey * 13 + value));
 
             //Moves to the next column of the sprite sheet after a suit is completed
             if (xPos == width * 12) {

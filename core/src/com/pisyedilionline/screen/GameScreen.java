@@ -173,7 +173,11 @@ public class GameScreen extends BaseScreen
 						@Override
 						public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
 						{
-							playCard((Card) event.getTarget());
+							Card playCard = (Card) event.getTarget();
+							playCard(playCard);
+
+							game.nakama.getSocket().sendMatchData(game.matchId,
+									Opcode.PLAY_CARD.id, Integer.toString(playCard.getOrder()).getBytes());
 							return true;
 						}
 					});

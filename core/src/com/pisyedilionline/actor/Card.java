@@ -10,7 +10,7 @@ public class Card extends BaseCard implements Comparable<Card> {
 		CLUBS, DIAMONDS, HEARTS, SPADES,
     }
 
-    private Suit cSuit;
+    private Suit suit;
     private boolean selected;
     private int value, order;
 
@@ -18,7 +18,7 @@ public class Card extends BaseCard implements Comparable<Card> {
         super(sprite);
 
         selected = false;
-        this.cSuit = suit;
+        this.suit = suit;
         this.value = value;
         this.order = order;
 
@@ -40,7 +40,7 @@ public class Card extends BaseCard implements Comparable<Card> {
     }
 
     public Suit getSuit() {
-        return cSuit;
+        return suit;
     }
 
     public boolean isSelected() { return selected; }
@@ -49,7 +49,12 @@ public class Card extends BaseCard implements Comparable<Card> {
         this.selected = selected;
     }
 
-    @Override
+	public int getOrder()
+	{
+		return order;
+	}
+
+	@Override
     public int compareTo(Card c)
     {
         return this.order - c.order;
