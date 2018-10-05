@@ -27,7 +27,7 @@ public class GameScreen extends BaseScreen
 	final Card.Suit[] SUITS = Card.Suit.values();
 
 	//	GAME VARIABLES
-	private Array<Opponent> opponents;
+	private Opponent opponents[];
 	private int deckSize = 0;
 	private int direction;	//	this player's chair position
 	private int turn;	//	whose turn is it
@@ -77,7 +77,7 @@ public class GameScreen extends BaseScreen
 		}
 
 		//	initialize opponents
-		opponents = new Array<Opponent>();
+		opponents = new Opponent[message.getPlayers().length];
 		for (int i = 0; i < message.getPlayers().length; i++)
 		{
 			PlayerMessage playerMessage = message.getPlayers()[i];
@@ -95,33 +95,43 @@ public class GameScreen extends BaseScreen
 					opponent.addCard(pool.pop());
 				}
 
-				opponents.add(opponent);
+				opponents[opponent.getDirection()] = opponent;
 				stage.addActor(opponent);
 			}
 		}
 
 		//	set position of opponents
-		if (opponents.size == 1)
+		if (opponents.length == 2)
 		{
-			opponents.get(0).setPosition(30, 65);
+			//	if there is only 1 opponent, let him sit across
+			for (Opponent opponent : opponents)
+			{
+				if (opponent != null)
+				{
+					opponent.setPosition(30, 65);
+				}
+			}
 		}
 		else
 		{
 			for (Opponent opponent : opponents)
 			{
-				if (opponent.getDirection() == (direction + 1) % message.getPlayers().length)
+				if (opponent != null)
 				{
-					opponent.setPosition(0, 80);
-					opponent.rotateBy(-90);
-				}
-				else if (opponent.getDirection() == (direction + 2) % message.getPlayers().length)
-				{
-					opponent.setPosition(30, 69);
-				}
-				else if (opponent.getDirection() == (direction + 3) % message.getPlayers().length)
-				{
-					opponent.setPosition(160, 10);
-					opponent.rotateBy(90);
+					if (opponent.getDirection() == (direction + 1) % message.getPlayers().length)
+					{
+						opponent.setPosition(0, 80);
+						opponent.rotateBy(-90);
+					}
+					else if (opponent.getDirection() == (direction + 2) % message.getPlayers().length)
+					{
+						opponent.setPosition(30, 69);
+					}
+					else if (opponent.getDirection() == (direction + 3) % message.getPlayers().length)
+					{
+						opponent.setPosition(160, 10);
+						opponent.rotateBy(90);
+					}
 				}
 			}
 		}
@@ -152,7 +162,7 @@ public class GameScreen extends BaseScreen
 
         for (Card card: hand)
 		{
-			if (turnCount < opponents.size + 1)
+			if (turnCount < opponents.length)
 			{
 				//	first round
 				if (card.getSuit() == Card.Suit.CLUBS)
@@ -185,10 +195,13 @@ public class GameScreen extends BaseScreen
 		{
 			for (Opponent opponent : opponents)
 			{
-				if (turn == opponent.getDirection())
+				if(opponent != null)
 				{
-					turnX = opponent.getX();
-					turnY = opponent.getY();
+					if (turn == opponent.getDirection())
+					{
+						turnX = opponent.getX();
+						turnY = opponent.getY();
+					}
 				}
 			}
 		}
