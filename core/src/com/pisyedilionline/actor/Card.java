@@ -23,7 +23,6 @@ public class Card extends BaseCard implements Comparable<Card> {
         this.value = value;
         this.order = order;
 
-        setPosition(1000, 1000);	//	out of screen
         addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

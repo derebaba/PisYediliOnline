@@ -58,7 +58,7 @@ public class NakamaSessionManager
 			game.prefs.putString("nk.session", session.getAuthToken());
 			game.prefs.flush();
 
-			game.logger.info("Authentication is successful with token: " + session.getAuthToken());
+			game.logger.info("Authentication is successful.");
 
 			socket = client.createSocket();
 			return socket.connect(session, new PisClientListener(game));
@@ -71,7 +71,6 @@ public class NakamaSessionManager
 			game.logger.info("soket kuruldu");
 			this.session = session;
 			game.setConnected(true);
-			session.getUsername();
 			return null;
 		};
 

@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
@@ -37,6 +39,7 @@ public class GameScreen extends BaseScreen
 	private Array<BaseCard> pool;
 	private BaseCard deck;
 
+	//	TODO: turn yuvarlağı yerine Opponent'a bi indicator ekle
 	private float turnX = 0, turnY = 0;	//	turnün kimde olduğunu gösteren yuvarlağın pozisyonu
 
     public GameScreen(final PisYediliOnline game, GameStartMessage message, String username, String matchId) {
@@ -55,7 +58,9 @@ public class GameScreen extends BaseScreen
 		pool = new Array<>(52);
 		for (int i = 0; i < 52; i++)
 		{
-			pool.add(new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class))));
+			BaseCard poolCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
+			pool.add(poolCard);
+			stage.addActor(poolCard);
 		}
 
 		//	initialize hand
@@ -207,6 +212,13 @@ public class GameScreen extends BaseScreen
 		{
 			@Override
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+
+				BaseCard animationCard = pool.peek();
+				animationCard.setPosition(deck.getX(), deck.getY());
+
+				animationCard.addAction(Actions.sequence(
+						Actions.moveTo(80, 0, 0.5f), Actions.moveTo(1000, 1000)));
+
 				game.logger.info("Sending draw card message");
 
 				game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);

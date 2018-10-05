@@ -13,6 +13,8 @@ public class BaseCard extends Actor
         this.sprite = sprite;
 
         setSize(14, 21);
+
+		setPosition(1000, 1000);	//	out of screen
     }
 
     public Sprite getSprite() { return sprite; }
