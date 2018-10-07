@@ -190,6 +190,24 @@ public class GameScreen extends BaseScreen
         enableDeck();
     }
 
+    public void giveCard(int direction)
+	{
+		if (opponents[direction] != null)
+		{
+			game.logger.info("Player[" + direction + "] drew a card");
+			BaseCard animationCard = pool.pop();
+			animationCard.setPosition(deck.getX(), deck.getY());
+
+			animationCard.addAction(Actions.sequence(
+					Actions.moveTo(opponents[direction].getX(), opponents[direction].getY(), 0.5f),
+					Actions.moveTo(1000, 1000)));
+
+			opponents[direction].addCard(pool.pop());
+
+			pool.add(animationCard);
+		}
+	}
+
 	//	PRIVATE METHODS
 	private void playCard(Card card)
 	{

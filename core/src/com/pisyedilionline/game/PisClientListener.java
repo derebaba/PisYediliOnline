@@ -103,6 +103,10 @@ public class PisClientListener implements ClientListener
 			break;
 			case DRAW_CARD_BROADCAST:
 				int direction = Integer.parseInt(data);
+				Gdx.app.postRunnable(() ->
+				{
+					gameScreen.giveCard(direction);
+				});
 			break;
 		}
 	}
