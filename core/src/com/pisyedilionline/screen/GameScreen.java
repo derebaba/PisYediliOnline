@@ -33,7 +33,7 @@ public class GameScreen extends BaseScreen
 	private int turn;	//	whose turn is it
 
 	/**
-	 * how many turns have passed (starts from 1 because lua)
+	 * how many turns have passed
 	 */
 	private int turnCount = 0;
 	private boolean clockwise = true;
@@ -160,40 +160,12 @@ public class GameScreen extends BaseScreen
     {
         sortCards();
 
-        for (Card card: hand)
-		{
-			if (turnCount < opponents.length)
-			{
-				//	first round
-				if (card.getSuit() == Card.Suit.CLUBS)
-				{
-					card.getSprite().setColor(Color.YELLOW);
-					card.addListener(new InputListener()
-					{
-						@Override
-						public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
-						{
-							Card playCard = (Card) event.getTarget();
-							playCard(playCard);
-
-							game.nakama.getSocket().sendMatchData(game.matchId,
-									Opcode.PLAY_CARD.id, Integer.toString(playCard.getOrder()).getBytes());
-							return true;
-						}
-					});
-				}
-			}
-			else
-			{
-				//	not first round
-				Card topCard = pile.peek();
-			}
-		}
-
 		if (turn == direction)
 		{
 			turnX = 80;
 			turnY = 5;
+
+			enableHand();
 		}
 		else
 		{
@@ -226,6 +198,51 @@ public class GameScreen extends BaseScreen
 		card.setZIndex(100 + turnCount++);   //  100 is arbitrary
 		card.clearListeners();
 		sortCards();
+	}
+
+	private void enableHand()
+	{
+		for (Card card: hand)
+		{
+			if (turnCount < opponents.length)
+			{
+				//	first round
+				if (card.getSuit() == Card.Suit.CLUBS)
+				{
+					card.addListener(new InputListener()
+					{
+						@Override
+						public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+						{
+							Card playCard = (Card) event.getTarget();
+							playCard(playCard);
+
+							game.nakama.getSocket().sendMatchData(game.matchId,
+									Opcode.PLAY_CARD.id, Integer.toString(playCard.getOrder()).getBytes());
+
+
+							//	disable hand after playing
+							for (Card handCard: hand)
+							{
+								handCard.getSprite().setColor(Color.WHITE);
+								handCard.clearListeners();
+							}
+
+							return true;
+						}
+					});
+				}
+				else
+				{
+					card.getSprite().setColor(Color.LIGHT_GRAY);
+				}
+			}
+			else
+			{
+				//	not first round
+				Card topCard = pile.peek();
+			}
+		}
 	}
 
 	private void enableDeck()
