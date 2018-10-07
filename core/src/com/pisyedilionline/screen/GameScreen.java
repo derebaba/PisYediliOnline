@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
@@ -198,11 +199,13 @@ public class GameScreen extends BaseScreen
 			BaseCard animationCard = pool.pop();
 			animationCard.setPosition(deck.getX(), deck.getY());
 
+			RunnableAction drawCardAction = new RunnableAction();
+			drawCardAction.setRunnable(() -> opponents[direction].addCard(pool.pop()));
+
 			animationCard.addAction(Actions.sequence(
 					Actions.moveTo(opponents[direction].getX(), opponents[direction].getY(), 0.5f),
-					Actions.moveTo(1000, 1000)));
-
-			opponents[direction].addCard(pool.pop());
+					Actions.moveTo(1000, 1000),
+					drawCardAction));
 
 			pool.add(animationCard);
 		}
