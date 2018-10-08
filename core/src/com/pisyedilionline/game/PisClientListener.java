@@ -92,6 +92,7 @@ public class PisClientListener implements ClientListener
 					screen.dispose();
 				});
 			break;
+
 			case DRAW_CARD:
 				int drawnCard = Integer.parseInt(data);
 
@@ -101,12 +102,15 @@ public class PisClientListener implements ClientListener
 					gameScreen.update();
 				});
 			break;
+
 			case DRAW_CARD_BROADCAST:
 				int direction = Integer.parseInt(data);
-				Gdx.app.postRunnable(() ->
-				{
-					gameScreen.giveCard(direction);
-				});
+				Gdx.app.postRunnable(() -> gameScreen.giveCard(direction));
+			break;
+
+			case PLAY_CARD:
+				int playedCardId = Integer.parseInt(data);
+				Gdx.app.postRunnable(() -> gameScreen.playCardOpponent(playedCardId));
 			break;
 		}
 	}

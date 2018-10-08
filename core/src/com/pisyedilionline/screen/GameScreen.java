@@ -161,6 +161,10 @@ public class GameScreen extends BaseScreen
     {
         sortCards();
 
+        turn = turnCount % opponents.length;
+
+		game.logger.info("Update - turn: " + turn);
+
 		if (turn == direction)
 		{
 			turnX = 80;
@@ -203,11 +207,26 @@ public class GameScreen extends BaseScreen
 			drawCardAction.setRunnable(() -> opponents[direction].addCard(pool.pop()));
 
 			animationCard.addAction(Actions.sequence(
-					Actions.moveTo(opponents[direction].getX(), opponents[direction].getY(), 0.5f),
+					Actions.moveTo(opponents[direction].getX(), opponents[direction].getY(), 0.3f),
 					Actions.moveTo(1000, 1000),
 					drawCardAction));
 
 			pool.add(animationCard);
+		}
+	}
+
+	public void playCardOpponent(int cardId)
+	{
+		turnCount++;
+		if (turn != direction)
+		{
+			Card card = allCards.getCardById(cardId);
+			pile.add(card);
+
+			card.setZIndex(100 + turnCount);   //  100 is arbitrary
+
+			card.setPosition(opponents[turn].getX(), opponents[turn].getY());
+			card.addAction(Actions.moveTo(80, 40, 0.3f));
 		}
 	}
 
@@ -216,7 +235,7 @@ public class GameScreen extends BaseScreen
 	{
 		hand.removeValue(card, false);
 		card.setPosition(80, 40);
-		card.setZIndex(100 + turnCount++);   //  100 is arbitrary
+		card.setZIndex(100 + turnCount);   //  100 is arbitrary
 		card.clearListeners();
 		sortCards();
 	}
@@ -277,7 +296,7 @@ public class GameScreen extends BaseScreen
 				animationCard.setPosition(deck.getX(), deck.getY());
 
 				animationCard.addAction(Actions.sequence(
-						Actions.moveTo(80, 0, 0.5f), Actions.moveTo(1000, 1000)));
+						Actions.moveTo(80, 0, 0.3f), Actions.moveTo(1000, 1000)));
 
 				game.logger.info("Sending draw card message");
 
