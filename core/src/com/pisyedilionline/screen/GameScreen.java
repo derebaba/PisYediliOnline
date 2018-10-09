@@ -20,6 +20,7 @@ import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.Opcode;
 import com.pisyedilionline.message.PlayerMessage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -250,47 +251,67 @@ public class GameScreen extends BaseScreen
 		sortCards();
 	}
 
+	/**
+	 * Add listener to cards that player can play. Grey out unplayable cards
+	 */
 	private void enableHand()
 	{
-		for (Card card: hand)
+		InputListener cardListener = new InputListener()
 		{
-			if (turnCount < opponents.length)
+			@Override
+			public boolean touchDown(@NotNull InputEvent event, float x, float y, int pointer, int button)
+			{
+				Card playCard = (Card) event.getTarget();
+				playCard(playCard);
+
+				game.nakama.getSocket().sendMatchData(game.matchId,
+						Opcode.PLAY_CARD.id, Integer.toString(playCard.getOrder()).getBytes());
+
+
+				//	disable hand and deck after playing
+				for (Card handCard: hand)
+				{
+					handCard.getSprite().setColor(Color.WHITE);
+					handCard.clearListeners();
+				}
+				deck.clearListeners();
+
+				return true;
+			}
+		};
+
+		if (turnCount < opponents.length)
+		{
+			for (Card card: hand)
 			{
 				//	first round: player can only play clubs
 				if (card.getSuit() == Card.Suit.CLUBS)
 				{
-					card.addListener(new InputListener()
-					{
-						@Override
-						public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
-						{
-							Card playCard = (Card) event.getTarget();
-							playCard(playCard);
-
-							game.nakama.getSocket().sendMatchData(game.matchId,
-									Opcode.PLAY_CARD.id, Integer.toString(playCard.getOrder()).getBytes());
-
-
-							//	disable hand after playing
-							for (Card handCard: hand)
-							{
-								handCard.getSprite().setColor(Color.WHITE);
-								handCard.clearListeners();
-							}
-
-							return true;
-						}
-					});
+					card.addListener(cardListener);
 				}
 				else
 				{
 					card.getSprite().setColor(Color.LIGHT_GRAY);
 				}
 			}
-			else
+		}
+		else
+		{
+			//	not first round
+			Card topCard = pile.peek();
+
+			for (Card card: hand)
 			{
-				//	not first round
-				Card topCard = pile.peek();
+				if (card.getSuit() == topCard.getSuit() || card.getValue() == topCard.getValue() ||
+						card.getValue() == 10)
+				{
+					//	same suit or same value or jilet
+					card.addListener(cardListener);
+				}
+				else
+				{
+					card.getSprite().setColor(Color.LIGHT_GRAY);
+				}
 			}
 		}
 	}
