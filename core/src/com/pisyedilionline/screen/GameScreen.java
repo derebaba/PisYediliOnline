@@ -230,6 +230,16 @@ public class GameScreen extends BaseScreen
 		}
 	}
 
+	public void setTurn(int turn)
+	{
+		this.turn = turn;
+	}
+
+	public void setClockwise(boolean clockwise)
+	{
+		this.clockwise = clockwise;
+	}
+
 	//	PRIVATE METHODS
 	private void playCard(Card card)
 	{
@@ -246,7 +256,7 @@ public class GameScreen extends BaseScreen
 		{
 			if (turnCount < opponents.length)
 			{
-				//	first round
+				//	first round: player can only play clubs
 				if (card.getSuit() == Card.Suit.CLUBS)
 				{
 					card.addListener(new InputListener()
