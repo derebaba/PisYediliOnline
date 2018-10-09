@@ -27,6 +27,10 @@ public class GameScreen extends BaseScreen
 {
 	final Card.Suit[] SUITS = Card.Suit.values();
 
+	/**
+	 * TODO: create Player class which have the same parent with Opponent
+	 * Have a parent class array here instead of opponents[]
+	 */
 	//	GAME VARIABLES
 	private Opponent opponents[];
 	private int deckSize = 0;
@@ -37,7 +41,7 @@ public class GameScreen extends BaseScreen
 	 * how many turns have passed
 	 */
 	private int turnCount = 0;
-	private boolean clockwise = true;
+	private boolean clockwise = true;	//	may be removed later
 	private String username, matchId;
 
 	//	CARDS
@@ -215,6 +219,7 @@ public class GameScreen extends BaseScreen
 		}
 	}
 
+	//	TODO: Join this method with playCard or move it into Opponent
 	public void playCardOpponent(int cardId)
 	{
 		turnCount++;
@@ -233,11 +238,6 @@ public class GameScreen extends BaseScreen
 	public void setTurn(int turn)
 	{
 		this.turn = turn;
-	}
-
-	public void setClockwise(boolean clockwise)
-	{
-		this.clockwise = clockwise;
 	}
 
 	//	PRIVATE METHODS
