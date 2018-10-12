@@ -156,11 +156,6 @@ public class GameScreen extends BaseScreen
         deck.setPosition(55, 40);
 
         update();
-
-		if (turn == direction)
-		{
-			enableDeck();
-		}
     }
 
     public void update()
@@ -177,6 +172,7 @@ public class GameScreen extends BaseScreen
 			turnY = 5;
 
 			enableHand();
+			enableDeck();
 		}
 		else
 		{
@@ -198,7 +194,6 @@ public class GameScreen extends BaseScreen
     {
         hand.add(allCards.getCardById(cardId));
         sortCards();
-        enableDeck();
     }
 
     public void giveCard(int direction)
