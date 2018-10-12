@@ -21,8 +21,8 @@ public class NakamaSessionManager
 	{
 		this.game = game;
 
-		//client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
-		client = new DefaultClient("defaultkey", "localhost", 7349, false);	//	uncomment for local development
+		client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
+		//client = new DefaultClient("defaultkey", "localhost", 7349, false);	//	uncomment for local development
 	}
 
 	public SocketClient getSocket() { return socket; }

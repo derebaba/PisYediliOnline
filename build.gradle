@@ -59,7 +59,10 @@ project(":desktop") {
 project(":android") {
     apply plugin: "android"
 
-    configurations { natives }
+    configurations {
+        natives
+        all*.exclude group: 'com.google.code.gson'
+    }
 
     dependencies {
         compile project(":core")
