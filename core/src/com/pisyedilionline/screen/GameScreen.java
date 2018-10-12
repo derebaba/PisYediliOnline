@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
 import com.pisyedilionline.game.AllCards;
@@ -256,27 +257,53 @@ public class GameScreen extends BaseScreen
 	 */
 	private void enableHand()
 	{
-		InputListener cardListener = new InputListener()
+		InputListener cardListener = new DragListener()
 		{
+			float startX, startY;
+
 			@Override
-			public boolean touchDown(@NotNull InputEvent event, float x, float y, int pointer, int button)
+			public void dragStart(@NotNull InputEvent event, float x, float y, int pointer)
 			{
-				Card playCard = (Card) event.getTarget();
-				playCard(playCard);
+				Card card = (Card) event.getTarget();
+				startX = card.getX();
+				startY = card.getY();
+			}
 
-				game.nakama.getSocket().sendMatchData(game.matchId,
-						Opcode.PLAY_CARD.id, Integer.toString(playCard.getOrder()).getBytes());
+			@Override
+			public void drag(@NotNull InputEvent event, float x, float y, int pointer)
+			{
+				Card card = (Card) event.getTarget();
 
+				card.moveBy(x - card.getWidth() / 2, y - card.getHeight() / 2);
+			}
 
-				//	disable hand and deck after playing
-				for (Card handCard: hand)
+			@Override
+			public void dragStop(@NotNull InputEvent event, float x, float y, int pointer)
+			{
+				float stageX = event.getStageX(), stageY = event.getStageY();
+
+				Card card = (Card) event.getTarget();
+
+				if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
 				{
-					handCard.getSprite().setColor(Color.WHITE);
-					handCard.clearListeners();
-				}
-				deck.clearListeners();
+					playCard(card);
 
-				return true;
+					game.nakama.getSocket().sendMatchData(game.matchId,
+							Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
+
+
+					//	disable hand and deck after playing
+					for (Card handCard: hand)
+					{
+						handCard.getSprite().setColor(Color.WHITE);
+						handCard.clearListeners();
+					}
+					deck.clearListeners();
+				}
+				else
+				{
+					card.addAction(Actions.moveTo(startX, startY, 0.1f));
+				}
 			}
 		};
 
