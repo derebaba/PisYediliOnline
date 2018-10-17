@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
+import com.pisyedilionline.actor.Player;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.actor.Opponent;
@@ -35,8 +36,8 @@ public class GameScreen extends BaseScreen
 	 */
 	//	GAME VARIABLES
 	private Opponent opponents[];
+	private Player player;
 	private int deckSize = 0;
-	private int direction;	//	this player's chair position
 	private int turn;	//	whose turn is it
 
 	/**
@@ -76,13 +77,6 @@ public class GameScreen extends BaseScreen
 			stage.addActor(poolCard);
 		}
 
-		//	initialize hand
-		hand = new Array<Card>();
-		for (int id : message.getCards()) {
-			Card card = allCards.getCardById(id);
-			hand.add(card);
-		}
-
 		//	initialize opponents
 		opponents = new Opponent[message.getPlayers().length];
 		for (int i = 0; i < message.getPlayers().length; i++)
@@ -90,8 +84,16 @@ public class GameScreen extends BaseScreen
 			PlayerMessage playerMessage = message.getPlayers()[i];
 			if (playerMessage.getUsername().equals(username))
 			{
-				direction = playerMessage.getDirection();
-				game.logger.info("Direction: " + direction);
+				player = new Player(game, playerMessage);
+
+				//	initialize hand
+				hand = new Array<Card>();
+				for (int id : message.getCards()) {
+					Card card = allCards.getCardById(id);
+					hand.add(card);
+				}
+
+				opponents[player.getDirection()] = player;
 			}
 			else
 			{
@@ -113,9 +115,9 @@ public class GameScreen extends BaseScreen
 			//	if there is only 1 opponent, let him sit across
 			for (Opponent opponent : opponents)
 			{
-				if (opponent != null)
+				if (opponent.getDirection() != player.getDirection())
 				{
-					opponent.setPosition(30, 65);
+					opponent.setPosition(80, 69);
 				}
 			}
 		}
@@ -123,22 +125,18 @@ public class GameScreen extends BaseScreen
 		{
 			for (Opponent opponent : opponents)
 			{
-				if (opponent != null)
+				if (opponent.getDirection() == (player.getDirection() + 1) % message.getPlayers().length)
 				{
-					if (opponent.getDirection() == (direction + 1) % message.getPlayers().length)
-					{
-						opponent.setPosition(0, 80);
-						opponent.rotateBy(-90);
-					}
-					else if (opponent.getDirection() == (direction + 2) % message.getPlayers().length)
-					{
-						opponent.setPosition(30, 69);
-					}
-					else if (opponent.getDirection() == (direction + 3) % message.getPlayers().length)
-					{
-						opponent.setPosition(160, 10);
-						opponent.rotateBy(90);
-					}
+					opponent.setPosition(0, 45);
+					opponent.rotateBy(-90);
+				}
+				else if (opponent.getDirection() == (player.getDirection() + 2) % message.getPlayers().length)
+				{
+					opponent.setPosition(80, 69);
+				}
+				else if (opponent.getDirection() == (player.getDirection() + 3) % message.getPlayers().length) {
+					opponent.setPosition(160, 45);
+					opponent.rotateBy(90);
 				}
 			}
 		}
@@ -166,7 +164,7 @@ public class GameScreen extends BaseScreen
 
 		game.logger.info("Update - turn: " + turn);
 
-		if (turn == direction)
+		if (turn == player.getDirection())
 		{
 			turnX = 80;
 			turnY = 5;
@@ -178,7 +176,7 @@ public class GameScreen extends BaseScreen
 		{
 			for (Opponent opponent : opponents)
 			{
-				if(opponent != null)
+				if(opponent.getDirection() != player.getDirection())
 				{
 					if (turn == opponent.getDirection())
 					{
@@ -198,7 +196,7 @@ public class GameScreen extends BaseScreen
 
     public void giveCard(int direction)
 	{
-		if (opponents[direction] != null)
+		if (direction != player.getDirection())
 		{
 			game.logger.info("Player[" + direction + "] drew a card");
 			BaseCard animationCard = pool.pop();
@@ -220,7 +218,7 @@ public class GameScreen extends BaseScreen
 	public void playCardOpponent(int cardId)
 	{
 		turnCount++;
-		if (turn != direction)
+		if (turn != player.getDirection())
 		{
 			Card card = allCards.getCardById(cardId);
 			pile.add(card);
@@ -229,6 +227,8 @@ public class GameScreen extends BaseScreen
 
 			card.setPosition(opponents[turn].getX(), opponents[turn].getY());
 			card.addAction(Actions.moveTo(80, 40, 0.3f));
+
+			opponents[turn].getChildren().pop();
 		}
 	}
 

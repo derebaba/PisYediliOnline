@@ -26,11 +26,13 @@ public class Opponent extends Group
 
     private void positionCards()
 	{
-		for (int i = 0; i < getChildren().size; i++)
+	    int childrenCount = getChildren().size;
+
+		for (int i = 0; i < childrenCount; i++)
 		{
 			Actor card = getChildren().get(i);
 			card.setZIndex(i);
-			card.setPosition(5 * i, 0);
+			card.setPosition(5 * (i - childrenCount), 0);
 		}
 	}
 
