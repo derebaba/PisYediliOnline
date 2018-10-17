@@ -10,8 +10,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.pisyedilionline.screen.SplashScreen;
+
+import java.io.File;
 
 
 public class PisYediliOnline extends Game {
@@ -34,8 +37,10 @@ public class PisYediliOnline extends Game {
 	public void create() {
 		shapeRenderer = new ShapeRenderer();
 
-        logger = new Logger("Genel");
-		logger.setLevel(Logger.DEBUG);
+		//	TODO: add separate loggers for each class
+		//	configure logger
+		org.apache.log4j.PropertyConfigurator.configure("../../core/src/main/resources/log4j.properties");
+        logger = LoggerFactory.getLogger(this.getClass());
 
         assetManager = new AssetManager();
 		//	load assets
