@@ -240,12 +240,6 @@ public class GameScreen extends BaseScreen
 		}
 	}
 
-	public int getTurn() { return turn; }
-	public void setTurn(int turn)
-	{
-		this.turn = turn;
-	}
-
 	public Opponent[] getOpponents() { return opponents; }
 
 	/**
@@ -253,50 +247,7 @@ public class GameScreen extends BaseScreen
 	 */
 	private void enableHand()
 	{
-		InputListener cardListener = new DragListener()
-		{
-			float startX, startY;
-
-			@Override
-			public void dragStart(@NotNull InputEvent event, float x, float y, int pointer)
-			{
-				Card card = (Card) event.getTarget();
-				startX = card.getX();
-				startY = card.getY();
-			}
-
-			@Override
-			public void drag(@NotNull InputEvent event, float x, float y, int pointer)
-			{
-				Card card = (Card) event.getTarget();
-
-				card.moveBy(x - card.getWidth() / 2, y - card.getHeight() / 2);
-			}
-
-			@Override
-			public void dragStop(@NotNull InputEvent event, float x, float y, int pointer)
-			{
-				float stageX = event.getStageX(), stageY = event.getStageY();
-
-				Card card = (Card) event.getTarget();
-
-				if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
-				{
-					player.playCard(card);
-
-					game.nakama.getSocket().sendMatchData(game.matchId,
-							Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
-
-
-					player.disableHand();
-					deck.clearListeners();
-				}
-				else
-				{
-					card.addAction(Actions.moveTo(startX, startY, 0.1f));
-				}
-			}
-		};
+		CardListener cardListener = new CardListener(this);
 
 		boolean isFirstHand = turnCount < opponents.length;
 
@@ -335,6 +286,15 @@ public class GameScreen extends BaseScreen
 			}
 		});
 	}
+
+	//	GETTERS AND SETTERS
+	public int getTurn() { return turn; }
+
+	public void setTurn(int turn) { this.turn = turn; }
+
+	public Player getPlayer() { return player; }
+
+	public BaseCard getDeck() { return deck; }
 
 	//	SCREEN OVERRIDE METHODS
     @Override
