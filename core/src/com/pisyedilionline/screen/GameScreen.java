@@ -30,10 +30,6 @@ public class GameScreen extends BaseScreen
 {
 	final Card.Suit[] SUITS = Card.Suit.values();
 
-	/**
-	 * TODO: create Player class which have the same parent with Opponent
-	 * Have a parent class array here instead of opponents[]
-	 */
 	//	GAME VARIABLES
 	private Opponent opponents[];
 	private Player player;
@@ -193,6 +189,7 @@ public class GameScreen extends BaseScreen
 
     public void giveCard(int direction)
 	{
+		deckSize--;
 		if (direction != player.getDirection())
 		{
 			game.logger.info("Player[" + direction + "] drew a card");
@@ -307,15 +304,18 @@ public class GameScreen extends BaseScreen
         super.render(delta);
 
 		game.batch.begin();
-        game.font.draw(game.batch, Integer.toString(deckSize),62, 38);
+        game.font.draw(game.batch, Integer.toString(deckSize),55, 38);
         //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
 
 		game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		game.shapeRenderer.setColor(1, 0, 0, 1);
 
+		game.shapeRenderer.setColor(1, 0, 0, 1);
 		game.shapeRenderer.circle(turnX, turnY, 5);
 
+		game.shapeRenderer.set(ShapeRenderer.ShapeType.Line);
+		game.shapeRenderer.setColor(Color.WHITE);
+		game.shapeRenderer.rect(80, 40, 14, 21);
 		game.shapeRenderer.end();
     }
 

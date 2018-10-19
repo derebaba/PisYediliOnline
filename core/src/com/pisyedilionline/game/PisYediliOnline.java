@@ -36,6 +36,7 @@ public class PisYediliOnline extends Game {
 	@Override
 	public void create() {
 		shapeRenderer = new ShapeRenderer();
+		shapeRenderer.setAutoShapeType(true);
 
 		//	TODO: add separate loggers for each class
 		//	configure logger
