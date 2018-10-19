@@ -3,6 +3,7 @@ package com.pisyedilionline.actor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.PlayerMessage;
 import com.pisyedilionline.screen.GameScreen;
@@ -10,36 +11,39 @@ import org.jetbrains.annotations.NotNull;
 
 public class Opponent extends Group
 {
-	private final PisYediliOnline game;
+	protected final GameScreen screen;
 
     private String username = "";
-    private int direction;
+    protected int direction;
 
-    public Opponent(final PisYediliOnline game, @NotNull PlayerMessage message)
+    public Opponent(final GameScreen screen, @NotNull PlayerMessage message)
     {
-    	this.game = game;
+    	this.screen = screen;
         this.username = message.getUsername();
         this.direction = message.getDirection();
 
 		setTransform(true);
     }
 
-    private void positionCards()
+    @Override
+    protected void childrenChanged()
 	{
 	    int childrenCount = getChildren().size;
 
 		for (int i = 0; i < childrenCount; i++)
 		{
-			Actor card = getChildren().get(i);
+			BaseCard card = (BaseCard) getChildren().get(i);
 			card.setZIndex(i);
-			card.setPosition(5 * (i - childrenCount), 0);
+			card.setPosition(5 * (i - childrenCount / 2), 0);
+			card.setBounds(card.getX(), card.getY(),
+					card.getSprite().getWidth(), card.getSprite().getHeight());
 		}
 	}
 
-	public void addCard(BaseCard card)
+	public void playCard(int cardId)
 	{
-		addActor(card);
-		positionCards();
+		getChildren().pop();
+		screen.playCard(this, cardId);
 	}
 
     public String getUsername() {

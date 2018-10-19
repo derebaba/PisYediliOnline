@@ -49,7 +49,7 @@ public class GameScreen extends BaseScreen
 
 	//	CARDS
 	private AllCards allCards;
-	private Array<Card> hand, pile;
+	private Array<Card> pile;
 	private Array<BaseCard> pool;
 	private BaseCard deck;
 
@@ -84,24 +84,23 @@ public class GameScreen extends BaseScreen
 			PlayerMessage playerMessage = message.getPlayers()[i];
 			if (playerMessage.getUsername().equals(username))
 			{
-				player = new Player(game, playerMessage);
+				player = new Player(this, playerMessage);
 
-				//	initialize hand
-				hand = new Array<Card>();
 				for (int id : message.getCards()) {
 					Card card = allCards.getCardById(id);
-					hand.add(card);
+					player.addCard(card);
 				}
 
 				opponents[player.getDirection()] = player;
+				stage.addActor(player);
 			}
 			else
 			{
-				Opponent opponent = new Opponent(game, playerMessage);
+				Opponent opponent = new Opponent(this, playerMessage);
 
 				for (int j = 0; j < playerMessage.getCardCount(); j++)
 				{
-					opponent.addCard(pool.pop());
+					opponent.addActor(pool.pop());
 				}
 
 				opponents[opponent.getDirection()] = opponent;
@@ -109,6 +108,7 @@ public class GameScreen extends BaseScreen
 			}
 		}
 
+		player.setPosition(80, 0);
 		//	set position of opponents
 		if (opponents.length == 2)
 		{
@@ -158,11 +158,7 @@ public class GameScreen extends BaseScreen
 
     public void update()
     {
-        sortCards();
-
-        turn = turnCount % opponents.length;
-
-		game.logger.info("Update - turn: " + turn);
+		game.logger.info("turn: " + turn + ", turnCount: " + turnCount + ", opponents.length: " + opponents.length);
 
 		if (turn == player.getDirection())
 		{
@@ -186,12 +182,13 @@ public class GameScreen extends BaseScreen
 				}
 			}
 		}
+
+
     }
 
     public void drawCard(int cardId)
     {
-        hand.add(allCards.getCardById(cardId));
-        sortCards();
+        player.addCard(allCards.getCardById(cardId));
     }
 
     public void giveCard(int direction)
@@ -203,7 +200,7 @@ public class GameScreen extends BaseScreen
 			animationCard.setPosition(deck.getX(), deck.getY());
 
 			RunnableAction drawCardAction = new RunnableAction();
-			drawCardAction.setRunnable(() -> opponents[direction].addCard(pool.pop()));
+			drawCardAction.setRunnable(() -> opponents[direction].addActor(pool.pop()));
 
 			animationCard.addAction(Actions.sequence(
 					Actions.moveTo(opponents[direction].getX(), opponents[direction].getY(), 0.3f),
@@ -214,38 +211,42 @@ public class GameScreen extends BaseScreen
 		}
 	}
 
-	//	TODO: Join this method with playCard or move it into Opponent
-	public void playCardOpponent(int cardId)
+	/**
+	 * Play a card from the player who has the turn
+	 * @param opponent	the person that plays the card
+	 * @param cardId	id of playing card
+	 */
+	public void playCard(Opponent opponent, int cardId)
 	{
 		turnCount++;
-		if (turn != player.getDirection())
+
+		Card card = allCards.getCardById(cardId);
+		card.clearListeners();
+
+		stage.addActor(card);
+		pile.add(card);
+
+		card.setZIndex(100 + turnCount);   //  100 is arbitrary
+
+		if (player != opponent)
 		{
-			Card card = allCards.getCardById(cardId);
-			pile.add(card);
-
-			card.setZIndex(100 + turnCount);   //  100 is arbitrary
-
-			card.setPosition(opponents[turn].getX(), opponents[turn].getY());
+			card.setPosition(opponent.getX(), opponent.getY());
 			card.addAction(Actions.moveTo(80, 40, 0.3f));
-
-			opponents[turn].getChildren().pop();
+		}
+		else
+		{
+			//	don't play the animation if player is this.player
+			card.addAction(Actions.moveTo(80, 40));
 		}
 	}
 
+	public int getTurn() { return turn; }
 	public void setTurn(int turn)
 	{
 		this.turn = turn;
 	}
 
-	//	PRIVATE METHODS
-	private void playCard(Card card)
-	{
-		hand.removeValue(card, false);
-		card.setPosition(80, 40);
-		card.setZIndex(100 + turnCount);   //  100 is arbitrary
-		card.clearListeners();
-		sortCards();
-	}
+	public Opponent[] getOpponents() { return opponents; }
 
 	/**
 	 * Add listener to cards that player can play. Grey out unplayable cards
@@ -281,18 +282,13 @@ public class GameScreen extends BaseScreen
 
 				if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
 				{
-					playCard(card);
+					player.playCard(card);
 
 					game.nakama.getSocket().sendMatchData(game.matchId,
 							Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
 
 
-					//	disable hand and deck after playing
-					for (Card handCard: hand)
-					{
-						handCard.getSprite().setColor(Color.WHITE);
-						handCard.clearListeners();
-					}
+					player.disableHand();
 					deck.clearListeners();
 				}
 				else
@@ -302,39 +298,15 @@ public class GameScreen extends BaseScreen
 			}
 		};
 
-		if (turnCount < opponents.length)
+		boolean isFirstHand = turnCount < opponents.length;
+
+		if (isFirstHand)
 		{
-			for (Card card: hand)
-			{
-				//	first round: player can only play clubs
-				if (card.getSuit() == Card.Suit.CLUBS)
-				{
-					card.addListener(cardListener);
-				}
-				else
-				{
-					card.getSprite().setColor(Color.LIGHT_GRAY);
-				}
-			}
+			player.enableHand(cardListener, isFirstHand, null);
 		}
 		else
 		{
-			//	not first round
-			Card topCard = pile.peek();
-
-			for (Card card: hand)
-			{
-				if (card.getSuit() == topCard.getSuit() || card.getValue() == topCard.getValue() ||
-						card.getValue() == 10)
-				{
-					//	same suit or same value or jilet
-					card.addListener(cardListener);
-				}
-				else
-				{
-					card.getSprite().setColor(Color.LIGHT_GRAY);
-				}
-			}
+			player.enableHand(cardListener, isFirstHand, pile.peek());
 		}
 	}
 
@@ -362,22 +334,6 @@ public class GameScreen extends BaseScreen
 				return true;
 			}
 		});
-	}
-
-	/**
-	 * Sort and position cards in the hand
-	 */
-	private void sortCards()
-	{
-		hand.sort();
-		for (int i = 0; i < hand.size; i++)
-		{
-			Card card = hand.get(i);
-			card.setZIndex(i);
-			card.setPosition(30 + 10 * i, 5);
-			card.setBounds(card.getX(), card.getY(),
-					card.getSprite().getWidth(), card.getSprite().getHeight());
-		}
 	}
 
 	//	SCREEN OVERRIDE METHODS
