@@ -7,10 +7,7 @@ import com.heroiclabs.nakama.*;
 import com.heroiclabs.nakama.Error;
 import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
-import com.pisyedilionline.message.DrawCardMessage;
-import com.pisyedilionline.message.GameStartMessage;
-import com.pisyedilionline.message.Opcode;
-import com.pisyedilionline.message.PlayCardMessage;
+import com.pisyedilionline.message.*;
 import com.pisyedilionline.screen.GameScreen;
 import com.pisyedilionline.screen.MainMenuScreen;
 
@@ -116,10 +113,10 @@ public class PisClientListener implements ClientListener
 				break;
 
 			case PASS_TURN:
-				int nextPlayerDirection = Integer.parseInt(data);
+				PassTurnMessage passTurnMessage = gson.fromJson(data, PassTurnMessage.class);
 				Gdx.app.postRunnable(() ->
 				{
-					gameScreen.setTurn(nextPlayerDirection);
+					gameScreen.setTurn(passTurnMessage.getDirection());
 					gameScreen.update();
 				});
 				break;
