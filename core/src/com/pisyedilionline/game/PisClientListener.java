@@ -117,6 +117,7 @@ public class PisClientListener implements ClientListener
 				Gdx.app.postRunnable(() ->
 				{
 					gameScreen.setTurn(passTurnMessage.getDirection());
+					gameScreen.setMustDraw(passTurnMessage.getMustDraw());
 					gameScreen.update();
 				});
 				break;

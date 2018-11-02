@@ -35,6 +35,7 @@ public class GameScreen extends BaseScreen
 	private Player player;
 	private int deckSize = 0;
 	private int turn;	//	whose turn is it
+	private int mustDraw = 0;
 
 	/**
 	 * how many turns have passed
@@ -162,7 +163,10 @@ public class GameScreen extends BaseScreen
 			turnX = 80;
 			turnY = 5;
 
-			enableHand();
+			if (mustDraw <= 0)
+			{
+				enableHand();
+			}
 			enableDeck();
 		}
 		else
@@ -185,6 +189,7 @@ public class GameScreen extends BaseScreen
 
     public void drawCard(int cardId)
     {
+    	mustDraw--;
         player.addCard(allCards.getCardById(cardId));
     }
 
@@ -293,6 +298,16 @@ public class GameScreen extends BaseScreen
 	public Player getPlayer() { return player; }
 
 	public BaseCard getDeck() { return deck; }
+
+	public void setMustDraw(int mustDraw)
+	{
+		this.mustDraw = mustDraw;
+	}
+
+	public int getMustDraw()
+	{
+		return mustDraw;
+	}
 
 	//	SCREEN OVERRIDE METHODS
     @Override
