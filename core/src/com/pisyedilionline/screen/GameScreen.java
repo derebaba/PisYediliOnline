@@ -40,8 +40,8 @@ public class GameScreen extends BaseScreen
 	 * how many turns have passed
 	 */
 	private int turnCount = 0;
-	private boolean clockwise = true;	//	may be removed later
-	private String username, matchId;
+
+	private String matchId;
 
 	//	CARDS
 	private AllCards allCards;
@@ -138,10 +138,8 @@ public class GameScreen extends BaseScreen
 		}
 
 		this.deckSize = message.getDeckSize();
-		this.clockwise = message.isClockwise();
 		this.turn = message.getTurn();
 		this.matchId = matchId;
-		this.username = username;
 
 
         //  Prepare card deck to draw

@@ -25,7 +25,7 @@ public class Player extends Opponent {
 		for (int i = 0; i < getChildren().size - 1; i++)
 		{
 			Card currentCard = (Card) getChildren().get(i);
-			Card nextCard = (Card) getChildren().get(i);
+			Card nextCard = (Card) getChildren().get(i + 1);
 
 			if (card.getOrder() > currentCard.getOrder())
 			{
