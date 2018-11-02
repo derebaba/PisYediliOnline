@@ -121,18 +121,21 @@ public class GameScreen extends BaseScreen
 		{
 			for (Opponent opponent : opponents)
 			{
-				if (opponent.getDirection() == (player.getDirection() + 1) % message.getPlayers().length)
+				if (opponent.getDirection() != player.getDirection())
 				{
-					opponent.setPosition(0, 45);
-					opponent.rotateBy(-90);
-				}
-				else if (opponent.getDirection() == (player.getDirection() + 2) % message.getPlayers().length)
-				{
-					opponent.setPosition(80, 69);
-				}
-				else if (opponent.getDirection() == (player.getDirection() + 3) % message.getPlayers().length) {
-					opponent.setPosition(160, 45);
-					opponent.rotateBy(90);
+					if (opponent.getDirection() == (player.getDirection() + 1) % message.getPlayers().length)
+					{
+						opponent.setPosition(0, 45);
+						opponent.rotateBy(-90);
+					}
+					else if (opponent.getDirection() == (player.getDirection() + 2) % message.getPlayers().length)
+					{
+						opponent.setPosition(80, 69);
+					}
+					else if (opponent.getDirection() == (player.getDirection() + 3) % message.getPlayers().length) {
+						opponent.setPosition(160, 45);
+						opponent.rotateBy(90);
+					}
 				}
 			}
 		}

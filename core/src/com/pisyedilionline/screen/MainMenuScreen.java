@@ -29,8 +29,8 @@ public class MainMenuScreen extends BaseScreen
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
 			{
 				String query = "*";
-				int minCount = 2;
-				int maxCount = 2;
+				int minCount = 3;
+				int maxCount = 3;
 
 				game.nakama.getSocket()
 						.addMatchmaker(minCount, maxCount, query);
