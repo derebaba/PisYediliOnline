@@ -43,14 +43,14 @@ public class CardListener extends DragListener
 
 		if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
 		{
-			screen.getPlayer().playCard(card);
+			screen.getMainPlayer().playCard(card);
 
 			screen.game.nakama.getSocket().sendMatchData(screen.game.matchId,
 					Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
 
 
-			screen.getPlayer().disableHand();
-			screen.getDeck().clearListeners();
+			screen.getMainPlayer().disableHand();
+			screen.enableDeck(false);
 		}
 		else
 		{

@@ -38,7 +38,7 @@ public class NakamaSessionManager
 
 			if (!restoredSession.isExpired(new Date()))
 			{
-				// Session was valid and is restored now.
+				// Session was valid and is restored now.v
 				session = restoredSession;
 				socket = client.createSocket();
 				game.logger.info("Session is restored.");

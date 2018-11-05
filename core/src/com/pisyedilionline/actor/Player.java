@@ -1,115 +1,54 @@
 package com.pisyedilionline.actor;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.pisyedilionline.message.PlayerMessage;
 import com.pisyedilionline.screen.GameScreen;
 import org.jetbrains.annotations.NotNull;
 
-public class Player extends Opponent {
+public class Player extends Group
+{
+	protected final GameScreen screen;
+
+    private String username = "";
+    protected int direction;
 
     public Player(final GameScreen screen, @NotNull PlayerMessage message)
     {
-        super(screen, message);
+    	this.screen = screen;
+        this.username = message.getUsername();
+        this.direction = message.getDirection();
+
+		setTransform(true);
     }
 
-	public void addCard(Card card)
+    @Override
+    protected void childrenChanged()
 	{
-		if (!hasChildren())
+	    int childrenCount = getChildren().size;
+
+		for (int i = 0; i < childrenCount; i++)
 		{
-			addActor(card);
-			return;
-		}
-
-		for (int i = 0; i < getChildren().size - 1; i++)
-		{
-			Card currentCard = (Card) getChildren().get(i);
-			Card nextCard = (Card) getChildren().get(i + 1);
-
-			if (card.getOrder() > currentCard.getOrder())
-			{
-				if (card.getOrder() < nextCard.getOrder())
-				{
-					addActorAfter(currentCard, card);
-					return;
-				}
-			}
-			else
-			{
-				addActorBefore(currentCard, card);
-				return;
-			}
-		}
-
-		addActorAt(getChildren().size, card);
-	}
-
-    public void playCard(int cardId)
-	{
-		for (Actor actor : getChildren())
-		{
-			Card card = (Card) actor;
-			if (card.getOrder() == cardId)
-			{
-				removeActor(card);
-				break;
-			}
-		}
-		screen.playCard(this, cardId);
-	}
-
-	public void playCard(Card card)
-	{
-		removeActor(card);
-		screen.playCard(this, card.getOrder());
-	}
-
-	public void enableHand(InputListener cardListener, boolean isFirstHand, Card topCard)
-	{
-		if (isFirstHand)
-		{
-			for (Actor actor : getChildren())
-			{
-				Card card = (Card) actor;
-				//	first round: player can only play clubs
-				if (card.getSuit() == Card.Suit.CLUBS)
-				{
-					card.addListener(cardListener);
-				}
-				else
-				{
-					card.getSprite().setColor(Color.LIGHT_GRAY);
-				}
-			}
-		}
-		else
-		{
-			//	not first round
-			for (Actor actor : getChildren())
-			{
-				Card card = (Card) actor;
-				if (card.getSuit() == topCard.getSuit() || card.getValue() == topCard.getValue() ||
-						card.getValue() == 10)
-				{
-					//	same suit or same value or jilet
-					card.addListener(cardListener);
-				}
-				else
-				{
-					card.getSprite().setColor(Color.LIGHT_GRAY);
-				}
-			}
+			BaseCard card = (BaseCard) getChildren().get(i);
+			card.setZIndex(i);
+			card.setPosition(5 * (i - childrenCount / 2), 0);
+			card.setBounds(card.getX(), card.getY(),
+					card.getSprite().getWidth(), card.getSprite().getHeight());
 		}
 	}
 
-	public void disableHand()
-	{
-		for (Actor actor : getChildren())
-		{
-			Card card = (Card) actor;
-			card.getSprite().setColor(Color.WHITE);
-			card.clearListeners();
-		}
-	}
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
 }

@@ -9,7 +9,6 @@ import com.heroiclabs.nakama.api.ChannelMessage;
 import com.heroiclabs.nakama.api.NotificationList;
 import com.pisyedilionline.message.*;
 import com.pisyedilionline.screen.GameScreen;
-import com.pisyedilionline.screen.MainMenuScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,7 @@ public class PisClientListener implements ClientListener
 	@Override
 	public void onMatchData(final MatchData matchData)
 	{
-		String data = new String(matchData.getData());
+		String data = matchData.getData() == null ? null : new String(matchData.getData());
 		Opcode opCode = Opcode.getById(matchData.getOpCode());
 		game.logger.info("Received message with opCode " + opCode);
 		game.logger.info("Message data: " + data);
@@ -97,7 +96,6 @@ public class PisClientListener implements ClientListener
 				Gdx.app.postRunnable(() ->
 				{
 					gameScreen.drawCard(drawnCard);
-					gameScreen.update();
 				});
 				break;
 
@@ -108,17 +106,22 @@ public class PisClientListener implements ClientListener
 
 			case PLAY_CARD:
 				PlayCardMessage playCardMessage = gson.fromJson(data, PlayCardMessage.class);
-				Gdx.app.postRunnable(() ->
-						gameScreen.getOpponents()[playCardMessage.getPlayerDirection()].playCard(playCardMessage.getCardId()));
+				Gdx.app.postRunnable(() -> gameScreen.playCard(playCardMessage.getPlayerDirection(), playCardMessage.getCardId()));
 				break;
 
 			case PASS_TURN:
 				PassTurnMessage passTurnMessage = gson.fromJson(data, PassTurnMessage.class);
 				Gdx.app.postRunnable(() ->
 				{
-					gameScreen.setTurn(passTurnMessage.getDirection());
-					gameScreen.setMustDraw(passTurnMessage.getMustDraw());
-					gameScreen.update();
+				    gameScreen.passTurn(passTurnMessage);
+				});
+				break;
+
+			case SHUFFLE:
+                ShuffleMessage shuffleMessage = gson.fromJson(data, ShuffleMessage.class);
+				Gdx.app.postRunnable(() ->
+				{
+				    gameScreen.shufflePileIntoDeck(shuffleMessage);
 				});
 				break;
 		}

@@ -1,5 +1,6 @@
 package com.pisyedilionline.actor;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -33,6 +34,7 @@ public class Card extends BaseCard implements Comparable<Card> {
                 return true; //the inputmultiplexer will stop trying to handle this touch
             }
         });
+        sprite.setColor(Color.LIGHT_GRAY);
     }
 
     public int getValue() {

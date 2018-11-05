@@ -4,38 +4,39 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.pisyedilionline.actor.BaseCard;
+import com.pisyedilionline.actor.MainPlayer;
 import com.pisyedilionline.actor.Player;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
-import com.pisyedilionline.actor.Opponent;
 import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.Opcode;
+import com.pisyedilionline.message.PassTurnMessage;
 import com.pisyedilionline.message.PlayerMessage;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
+import com.pisyedilionline.message.ShuffleMessage;
 
 public class GameScreen extends BaseScreen
 {
+    public static final int MAX_ALLOWED_DRAW_CARD_COUNT = 3;
+    public static final int DRAW_CARD_COUNT_PER_7 = 3;
+
 	final Card.Suit[] SUITS = Card.Suit.values();
 
 	//	GAME VARIABLES
-	private Opponent opponents[];
-	private Player player;
+	private Player players[];
+	private MainPlayer mainPlayer;
 	private int deckSize = 0;
 	private int turn;	//	whose turn is it
-	private int mustDraw = 0;
+	private int pile7Count = 0;
+    private int jiletSuit = 0;
+	private boolean lastCardA = false;
+
 
 	/**
 	 * how many turns have passed
@@ -47,10 +48,10 @@ public class GameScreen extends BaseScreen
 	//	CARDS
 	private AllCards allCards;
 	private Array<Card> pile;
-	private Array<BaseCard> pool;
+    private Array<BaseCard> pool;
 	private BaseCard deck;
 
-	//	TODO: turn yuvarlağı yerine Opponent'a bi indicator ekle
+	//	TODO: turn yuvarlağı yerine Player'a bi indicator ekle
 	private float turnX = 0, turnY = 0;	//	turnün kimde olduğunu gösteren yuvarlağın pozisyonu
 
     public GameScreen(final PisYediliOnline game, GameStartMessage message, String username, String matchId) {
@@ -74,68 +75,72 @@ public class GameScreen extends BaseScreen
 			stage.addActor(poolCard);
 		}
 
-		//	initialize opponents
-		opponents = new Opponent[message.getPlayers().length];
+		//	initialize players
+		players = new Player[message.getPlayers().length];
 		for (int i = 0; i < message.getPlayers().length; i++)
 		{
 			PlayerMessage playerMessage = message.getPlayers()[i];
 			if (playerMessage.getUsername().equals(username))
 			{
-				player = new Player(this, playerMessage);
+			    game.logger.debug("My user name:" + username);
+				mainPlayer = new MainPlayer(this, playerMessage);
 
 				for (int id : message.getCards()) {
 					Card card = allCards.getCardById(id);
-					player.addCard(card);
+					mainPlayer.addCard(card);
 				}
 
-				opponents[player.getDirection()] = player;
-				stage.addActor(player);
+				players[mainPlayer.getDirection()] = mainPlayer;
+				stage.addActor(mainPlayer);
 			}
 			else
 			{
-				Opponent opponent = new Opponent(this, playerMessage);
+				Player player = new Player(this, playerMessage);
 
 				for (int j = 0; j < playerMessage.getCardCount(); j++)
 				{
-					opponent.addActor(pool.pop());
+				    //BaseCard poolCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
+				    //player.addActor(poolCard);
+					player.addActor(pool.pop());
+                    // todo use of pool needs to be optimized, not adding back to the pool makes the app crash
 				}
 
-				opponents[opponent.getDirection()] = opponent;
-				stage.addActor(opponent);
+				players[player.getDirection()] = player;
+				stage.addActor(player);
 			}
 		}
 
-		player.setPosition(80, 0);
-		//	set position of opponents
-		if (opponents.length == 2)
+		mainPlayer.setPosition(80, 0);
+		//	set position of players
+		if (players.length == 2)
 		{
 			//	if there is only 1 opponent, let him sit across
-			for (Opponent opponent : opponents)
+			for (Player player : players)
 			{
-				if (opponent.getDirection() != player.getDirection())
+				if (player.getDirection() != mainPlayer.getDirection())
 				{
-					opponent.setPosition(80, 69);
+					player.setPosition(80, 69);
 				}
 			}
 		}
 		else
 		{
-			for (Opponent opponent : opponents)
+			for (Player player : players)
 			{
-				if (opponent.getDirection() != player.getDirection())
+				if (player.getDirection() != mainPlayer.getDirection())
 				{
-					if (opponent.getDirection() == (player.getDirection() + 1) % message.getPlayers().length)
+					if (player.getDirection() == (mainPlayer.getDirection() + 1) % message.getPlayers().length)
 					{
-						opponent.setPosition(0, 45);
-						opponent.rotateBy(-90);
+						player.setPosition(0, 45);
+						player.rotateBy(-90);
 					}
-					else if (opponent.getDirection() == (player.getDirection() + 2) % message.getPlayers().length)
+					else if (player.getDirection() == (mainPlayer.getDirection() + 2) % message.getPlayers().length)
 					{
-						opponent.setPosition(80, 69);
+						player.setPosition(80, 69);
 					}
-					else if (opponent.getDirection() == (player.getDirection() + 3) % message.getPlayers().length) {
-						opponent.setPosition(160, 45);
-						opponent.rotateBy(90);
+					else if (player.getDirection() == (mainPlayer.getDirection() + 3) % message.getPlayers().length) {
+						player.setPosition(160, 45);
+						player.rotateBy(90);
 					}
 				}
 			}
@@ -156,70 +161,132 @@ public class GameScreen extends BaseScreen
 
     public void update()
     {
-		game.logger.info("turn: " + turn + ", turnCount: " + turnCount + ", opponents.length: " + opponents.length);
+		game.logger.info("turn: " + turn + ", turnCount: " + turnCount + ", players.length: " + players.length);
 
-		if (turn == player.getDirection())
+		if (turn == mainPlayer.getDirection())
 		{
 			turnX = 80;
 			turnY = 5;
+            CardListener cardListener = new CardListener(this);
 
-			if (mustDraw <= 0)
-			{
-				enableHand();
-			}
-			enableDeck();
+            boolean isFirstHand = turnCount < players.length;
+
+            if (lastCardA){ // A is played previously
+                if (!mainPlayer.lastCardADrawn){
+                    enableDeck(true);
+                }
+                else{
+                    enableDeck(false);
+                    game.nakama.getSocket().sendMatchData(game.matchId,
+                            Opcode.PASS_TURN.id, new byte[0]);
+                }
+            }
+            else if (mainPlayer.drawn7Count > 0 && mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){ // mainPlayer has drawn for 7 and needs to draw more
+                enableDeck(true);
+            }
+            else if (mainPlayer.enableHand(cardListener, isFirstHand, pile7Count, jiletSuit, pile.size == 0 ? null : pile.peek())){
+                enableDeck(false);
+            }
+            else if (isFirstHand){ // first hand, mainPlayer can draw as many
+                enableDeck(true);
+            }
+            else if (mainPlayer.drawnRegularCardCount < MAX_ALLOWED_DRAW_CARD_COUNT){ // mainPlayer can draw more
+                enableDeck(true);
+            }
+            else{
+                enableDeck(false);
+                game.nakama.getSocket().sendMatchData(game.matchId,
+                        Opcode.PASS_TURN.id, new byte[0]);
+            }
 		}
 		else
 		{
-			for (Opponent opponent : opponents)
+		    mainPlayer.disableHand();
+		    enableDeck(false);
+		    for (Player player : players)
 			{
-				if(opponent.getDirection() != player.getDirection())
+				if(player.getDirection() != mainPlayer.getDirection())
 				{
-					if (turn == opponent.getDirection())
+					if (turn == player.getDirection())
 					{
-						turnX = opponent.getX();
-						turnY = opponent.getY();
+						turnX = player.getX();
+						turnY = player.getY();
 					}
 				}
 			}
 		}
-
-
+		game.logger.debug("pool: " + pool.size);
     }
 
     public void drawCard(int cardId)
     {
-    	mustDraw--;
-        player.addCard(allCards.getCardById(cardId));
+        mainPlayer.addCard(allCards.getCardById(cardId));
+        if (lastCardA){
+            mainPlayer.lastCardADrawn = true;
+        }
+        else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
+            mainPlayer.drawn7Count++;
+        }
+        else{
+            mainPlayer.drawnRegularCardCount++;
+        }
+        update();
     }
 
     public void giveCard(int direction)
 	{
 		deckSize--;
-		if (direction != player.getDirection())
+		if (direction != mainPlayer.getDirection())
 		{
 			game.logger.info("Player[" + direction + "] drew a card");
-			BaseCard animationCard = pool.pop();
-			animationCard.setPosition(deck.getX(), deck.getY());
 
-			RunnableAction drawCardAction = new RunnableAction();
-			drawCardAction.setRunnable(() -> opponents[direction].addActor(pool.pop()));
+			//BaseCard animationCard = pool.pop();
+            BaseCard animationCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
+
+			/*RunnableAction drawCardAction = new RunnableAction();
+			//drawCardAction.setRunnable(() -> players[direction].addActor(drawnCard));
+            // todo use of pool needs to be optimized, not adding back to the pool makes the app crash
+            //BaseCard opponentCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
+            drawCardAction.setRunnable(() -> players[direction].addActor(animationCard));
 
 			animationCard.addAction(Actions.sequence(
-					Actions.moveTo(opponents[direction].getX(), opponents[direction].getY(), 0.3f),
-					Actions.moveTo(1000, 1000),
-					drawCardAction));
+			        Actions.moveTo(deck.getX(), deck.getY()),
+					Actions.moveTo(players[direction].getX(), players[direction].getY(), 0.3f),
+                    //Actions.moveTo(-1000, -1000, 0.3f),
+					drawCardAction));*/
 
-			pool.add(animationCard);
+            players[direction].addActor(animationCard);
+
+			//pool.add(animationCard);
 		}
+		else{
+		    // todo player draw
+        }
 	}
 
-	/**
-	 * Play a card from the player who has the turn
-	 * @param opponent	the person that plays the card
-	 * @param cardId	id of playing card
-	 */
-	public void playCard(Opponent opponent, int cardId)
+	public void passTurn(PassTurnMessage passTurnMessage){
+        turn = passTurnMessage.getDirection();
+        pile7Count = passTurnMessage.getPile7Count();
+        jiletSuit = passTurnMessage.getJiletSuit();
+        lastCardA = passTurnMessage.isLastCardA();
+        if (turn == mainPlayer.getDirection()){
+            mainPlayer.lastCardADrawn = false;
+            mainPlayer.drawnRegularCardCount = 0;
+            mainPlayer.drawn7Count = 0;
+        }
+
+        update();
+    }
+
+    public void shufflePileIntoDeck(ShuffleMessage shuffleMessage){
+        deckSize = shuffleMessage.getDeckSize();
+        pile.clear();
+        pile.add(allCards.getCardById(shuffleMessage.getTopCard()));
+
+        update();
+    }
+
+	public void playCard(int direction, int cardId)
 	{
 		turnCount++;
 
@@ -231,85 +298,72 @@ public class GameScreen extends BaseScreen
 
 		card.setZIndex(100 + turnCount);   //  100 is arbitrary
 
-		if (player != opponent)
+		Player player = players[direction];
+
+		if (mainPlayer.getDirection() !=  player.getDirection())
 		{
-			card.setPosition(opponent.getX(), opponent.getY());
+			card.setPosition(player.getX(), player.getY());
 			card.addAction(Actions.moveTo(80, 40, 0.3f));
+
+            pool.add((BaseCard) player.getChildren().pop());
 		}
 		else
 		{
-			//	don't play the animation if player is this.player
+			//	don't play the animation if mainPlayer is this.mainPlayer
 			card.addAction(Actions.moveTo(80, 40));
 		}
 	}
 
-	public Opponent[] getOpponents() { return opponents; }
+	public Player[] getPlayers() { return players; }
 
-	/**
-	 * Add listener to cards that player can play. Grey out unplayable cards
-	 */
-	private void enableHand()
+	public void enableDeck(boolean enabled)
 	{
-		CardListener cardListener = new CardListener(this);
+		if (enabled){
+			deck.getSprite().setColor(Color.GREEN);
+			deck.addListener(new InputListener()
+			{
+				@Override
+				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 
-		boolean isFirstHand = turnCount < opponents.length;
+				    if (deckSize == 0){
+                        game.nakama.getSocket().sendMatchData(matchId, Opcode.SHUFFLE.id, new byte[0]);
+                    }
+                    else{
+                        BaseCard animationCard = pool.peek();
+                        animationCard.setPosition(deck.getX(), deck.getY());
 
-		if (isFirstHand)
-		{
-			player.enableHand(cardListener, isFirstHand, null);
+                        animationCard.addAction(Actions.sequence(
+                                Actions.moveTo(80, 0, 0.3f), Actions.moveTo(1000, 1000)));
+
+                        game.logger.info("Sending draw card message");
+                        game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
+                    }
+                    // todo implement multiple card draws in the case of seven
+					//	clear listeners until server sends the card
+                    enableDeck(false);
+
+					event.handle();
+					return true;
+				}
+			});
 		}
-		else
-		{
-			player.enableHand(cardListener, isFirstHand, pile.peek());
+		else{
+			deck.getSprite().setColor(Color.GRAY);
+			deck.clearListeners();
 		}
 	}
 
-	private void enableDeck()
-	{
-		deck.addListener(new InputListener()
-		{
-			@Override
-			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 
-				BaseCard animationCard = pool.peek();
-				animationCard.setPosition(deck.getX(), deck.getY());
-
-				animationCard.addAction(Actions.sequence(
-						Actions.moveTo(80, 0, 0.3f), Actions.moveTo(1000, 1000)));
-
-				game.logger.info("Sending draw card message");
-
-				game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
-
-				//	clear listeners until server sends the card
-				deck.clearListeners();
-
-				event.handle();
-				return true;
-			}
-		});
-	}
 
 	//	GETTERS AND SETTERS
-	public int getTurn() { return turn; }
 
-	public void setTurn(int turn) { this.turn = turn; }
-
-	public Player getPlayer() { return player; }
+	public MainPlayer getMainPlayer() { return mainPlayer; }
 
 	public BaseCard getDeck() { return deck; }
 
-	public void setMustDraw(int mustDraw)
-	{
-		this.mustDraw = mustDraw;
-	}
 
-	public int getMustDraw()
-	{
-		return mustDraw;
-	}
 
-	//	SCREEN OVERRIDE METHODS
+    //	SCREEN OVERRIDE METHODS
     @Override
     public void show() {
 
