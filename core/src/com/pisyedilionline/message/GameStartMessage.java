@@ -8,12 +8,13 @@ public class GameStartMessage {
 
     private int[] cards;
 	private PlayerMessage[] players;
-	private int turn, deckSize;
+	private int turn, deckSize, turnCount;
 	private boolean clockwise;
 
     @Override
     public String toString() {
-        return "Cards: " + Arrays.toString(cards) + " turn = " + turn + " deckSize: " + deckSize + " Players: " + Arrays.deepToString(players);
+        return "Cards: " + Arrays.toString(cards) + " turn = " + turn + " deckSize: " + deckSize + " Players: " + Arrays.deepToString(players)
+				+ " turnCount: " + turnCount;
     }
 
 	public int[] getCards()
@@ -39,5 +40,9 @@ public class GameStartMessage {
 	public boolean isClockwise()
 	{
 		return clockwise;
+	}
+
+	public int getTurnCount() {
+		return turnCount;
 	}
 }

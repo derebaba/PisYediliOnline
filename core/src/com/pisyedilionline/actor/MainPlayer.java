@@ -49,24 +49,11 @@ public class MainPlayer extends Player {
 		addActorAt(getChildren().size, card);
 	}
 
-    public void playCard(int cardId)
-	{
-		for (Actor actor : getChildren())
-		{
-			Card card = (Card) actor;
-			if (card.getOrder() == cardId)
-			{
-				removeActor(card);
-				break;
-			}
-		}
-		screen.playCard(direction, cardId);
-	}
-
 	public void playCard(Card card)
 	{
 		removeActor(card);
-		screen.playCard(direction, card.getOrder());
+		//screen.playCard(direction, card.getOrder());
+		screen.playCard(direction, card);
 	}
 
 	/**

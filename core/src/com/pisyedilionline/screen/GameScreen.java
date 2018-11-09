@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -142,8 +143,8 @@ public class GameScreen extends BaseScreen
 
 		this.deckSize = message.getDeckSize();
 		this.turn = message.getTurn();
+		this.turnCount = message.getTurnCount();
 		this.matchId = matchId;
-
 
         //  Prepare card deck to draw
 		deck = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
@@ -163,7 +164,7 @@ public class GameScreen extends BaseScreen
 			turnY = 5;
             CardListener cardListener = new CardListener(this);
 
-            boolean isFirstHand = turnCount < players.length;
+            boolean isFirstHand = turnCount <= players.length;
 
             if (lastCardA){ // A is played previously
                 if (!mainPlayer.lastCardADrawn){
@@ -259,10 +260,12 @@ public class GameScreen extends BaseScreen
 	}
 
 	public void passTurn(PassTurnMessage passTurnMessage){
+    	turnCount++;
         turn = passTurnMessage.getDirection();
         pile7Count = passTurnMessage.getPile7Count();
         jiletSuit = passTurnMessage.getJiletSuit();
         lastCardA = passTurnMessage.isLastCardA();
+		turnCount = passTurnMessage.getTurnCount();
         if (turn == mainPlayer.getDirection()){
             mainPlayer.lastCardADrawn = false;
             mainPlayer.drawnRegularCardCount = 0;
@@ -282,17 +285,25 @@ public class GameScreen extends BaseScreen
 
 	public void playCard(int direction, int cardId)
 	{
-		turnCount++;
-
 		Card card = allCards.getCardById(cardId);
+		stage.addActor(card);
+		playCard(direction, card);
+	}
+
+	public void playCard(int direction, Card card)
+	{
 		card.clearListeners();
 
-		stage.addActor(card);
 		pile.add(card);
 
 		card.setZIndex(100 + turnCount);   //  100 is arbitrary
 
 		Player player = players[direction];
+
+		//int marginX = MathUtils.random(-2,3);
+		//int marginY = MathUtils.random(-2,3);
+		int marginX = 0;
+		int marginY = 0;
 
 		if (mainPlayer.getDirection() !=  player.getDirection())
 		{
@@ -301,12 +312,13 @@ public class GameScreen extends BaseScreen
 
 			card.addAction(Actions.sequence(
 					Actions.moveTo(player.getX(), player.getY()),
-					Actions.moveTo(80, 40, 0.3f)));
+					Actions.moveTo(80 + marginX, 40 + marginY, 0.3f)));
 		}
 		else
 		{
 			//	don't play the animation if mainPlayer is this.mainPlayer
-			card.addAction(Actions.moveTo(80, 40));
+			card.resetColor();
+			card.addAction(Actions.moveTo(80 + marginX, 40 + marginY));
 		}
 	}
 

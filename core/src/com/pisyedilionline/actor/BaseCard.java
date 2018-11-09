@@ -16,9 +16,7 @@ public class BaseCard extends Actor implements Pool.Poolable
         this.sprite = sprite;
 
         setSize(14, 21);
-        setPosition(-100,-100);
-
-        sprite.setColor(Color.LIGHT_GRAY);
+        reset();
     }
 
     public Sprite getSprite() { return sprite; }
@@ -45,5 +43,10 @@ public class BaseCard extends Actor implements Pool.Poolable
     @Override
     public void reset() {
         setPosition(-100,-100);
+        sprite.setColor(Color.LIGHT_GRAY);
+    }
+
+    public void resetColor(){
+        sprite.setColor(Color.LIGHT_GRAY);
     }
 }

@@ -10,6 +10,8 @@ public class PassTurnMessage
 
 	private boolean lastCardA;
 
+	private int turnCount;
+
 	public int getDirection()
 	{
 		return direction;
@@ -25,5 +27,9 @@ public class PassTurnMessage
 
 	public boolean isLastCardA() {
 		return lastCardA;
+	}
+
+	public int getTurnCount() {
+		return turnCount;
 	}
 }
