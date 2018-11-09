@@ -34,7 +34,6 @@ public class Card extends BaseCard implements Comparable<Card> {
                 return true; //the inputmultiplexer will stop trying to handle this touch
             }
         });
-        sprite.setColor(Color.LIGHT_GRAY);
     }
 
     public int getValue() {

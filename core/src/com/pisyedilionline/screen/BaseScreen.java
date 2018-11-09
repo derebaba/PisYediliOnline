@@ -14,7 +14,7 @@ public abstract class BaseScreen implements Screen {
     static final int WORLD_WIDTH = 160;
     static final int WORLD_HEIGHT = 90;
 
-    protected final PisYediliOnline game;
+    public final PisYediliOnline game;
     protected OrthographicCamera camera;
 
     protected Stage stage;

@@ -9,7 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.compression.lzma.Base;
 import com.pisyedilionline.actor.BaseCard;
+import com.pisyedilionline.actor.BaseCardPool;
 import com.pisyedilionline.actor.MainPlayer;
 import com.pisyedilionline.actor.Player;
 import com.pisyedilionline.game.AllCards;
@@ -48,7 +50,7 @@ public class GameScreen extends BaseScreen
 	//	CARDS
 	private AllCards allCards;
 	private Array<Card> pile;
-    private Array<BaseCard> pool;
+	private BaseCardPool baseCardPool = null;
 	private BaseCard deck;
 
 	//	TODO: turn yuvarlağı yerine Player'a bi indicator ekle
@@ -66,14 +68,8 @@ public class GameScreen extends BaseScreen
 
 		pile = new Array<Card>();
 
-		//	Create pool of upside-down cards for opponent hands
-		pool = new Array<>(52);
-		for (int i = 0; i < 52; i++)
-		{
-			BaseCard poolCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
-			pool.add(poolCard);
-			stage.addActor(poolCard);
-		}
+		Sprite baseCardSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
+		baseCardPool = new BaseCardPool(baseCardSprite, 52, 52);
 
 		//	initialize players
 		players = new Player[message.getPlayers().length];
@@ -99,10 +95,8 @@ public class GameScreen extends BaseScreen
 
 				for (int j = 0; j < playerMessage.getCardCount(); j++)
 				{
-				    //BaseCard poolCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
-				    //player.addActor(poolCard);
-					player.addActor(pool.pop());
-                    // todo use of pool needs to be optimized, not adding back to the pool makes the app crash
+					BaseCard baseCard = baseCardPool.obtain();
+					player.addActor(baseCard);
 				}
 
 				players[player.getDirection()] = player;
@@ -215,22 +209,31 @@ public class GameScreen extends BaseScreen
 				}
 			}
 		}
-		game.logger.debug("pool: " + pool.size);
     }
 
     public void drawCard(int cardId)
     {
-        mainPlayer.addCard(allCards.getCardById(cardId));
-        if (lastCardA){
-            mainPlayer.lastCardADrawn = true;
-        }
-        else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
-            mainPlayer.drawn7Count++;
-        }
-        else{
-            mainPlayer.drawnRegularCardCount++;
-        }
-        update();
+		if (lastCardA){
+			mainPlayer.lastCardADrawn = true;
+		}
+		else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
+			mainPlayer.drawn7Count++;
+		}
+		else{
+			mainPlayer.drawnRegularCardCount++;
+		}
+
+    	Card card = allCards.getCardById(cardId);
+
+		RunnableAction drawCardAction = new RunnableAction();
+		drawCardAction.setRunnable(() -> {
+			mainPlayer.addCard(card);
+			update();
+		});
+		card.addAction(Actions.sequence(
+				Actions.moveTo(deck.getX(), deck.getY() ),
+				Actions.moveTo(mainPlayer.getX(), mainPlayer.getY(), 0.3f),
+				drawCardAction));
     }
 
     public void giveCard(int direction)
@@ -240,28 +243,19 @@ public class GameScreen extends BaseScreen
 		{
 			game.logger.info("Player[" + direction + "] drew a card");
 
-			//BaseCard animationCard = pool.pop();
-            BaseCard animationCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
+			final Player player = players[direction];
 
-			/*RunnableAction drawCardAction = new RunnableAction();
-			//drawCardAction.setRunnable(() -> players[direction].addActor(drawnCard));
-            // todo use of pool needs to be optimized, not adding back to the pool makes the app crash
-            //BaseCard opponentCard = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
-            drawCardAction.setRunnable(() -> players[direction].addActor(animationCard));
+			final BaseCard baseCard = baseCardPool.obtain();
+			RunnableAction drawCardAction = new RunnableAction();
+			stage.addActor(baseCard);
 
-			animationCard.addAction(Actions.sequence(
+            drawCardAction.setRunnable(() -> player.addActor(baseCard));
+
+			baseCard.addAction(Actions.sequence(
 			        Actions.moveTo(deck.getX(), deck.getY()),
-					Actions.moveTo(players[direction].getX(), players[direction].getY(), 0.3f),
-                    //Actions.moveTo(-1000, -1000, 0.3f),
-					drawCardAction));*/
-
-            players[direction].addActor(animationCard);
-
-			//pool.add(animationCard);
+					Actions.moveTo(player.getX(), player.getY(), 0.3f),
+					drawCardAction));
 		}
-		else{
-		    // todo player draw
-        }
 	}
 
 	public void passTurn(PassTurnMessage passTurnMessage){
@@ -302,10 +296,12 @@ public class GameScreen extends BaseScreen
 
 		if (mainPlayer.getDirection() !=  player.getDirection())
 		{
-			card.setPosition(player.getX(), player.getY());
-			card.addAction(Actions.moveTo(80, 40, 0.3f));
+			BaseCard baseCard = (BaseCard) player.getChildren().pop();
+			baseCardPool.free(baseCard);
 
-            pool.add((BaseCard) player.getChildren().pop());
+			card.addAction(Actions.sequence(
+					Actions.moveTo(player.getX(), player.getY()),
+					Actions.moveTo(80, 40, 0.3f)));
 		}
 		else
 		{
@@ -329,11 +325,6 @@ public class GameScreen extends BaseScreen
                         game.nakama.getSocket().sendMatchData(matchId, Opcode.SHUFFLE.id, new byte[0]);
                     }
                     else{
-                        BaseCard animationCard = pool.peek();
-                        animationCard.setPosition(deck.getX(), deck.getY());
-
-                        animationCard.addAction(Actions.sequence(
-                                Actions.moveTo(80, 0, 0.3f), Actions.moveTo(1000, 1000)));
 
                         game.logger.info("Sending draw card message");
                         game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
