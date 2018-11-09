@@ -18,6 +18,8 @@ import com.pisyedilionline.actor.Player;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.game.PisYediliOnline;
+import com.pisyedilionline.message.DrawCardBroadcastMessage;
+import com.pisyedilionline.message.DrawCardMessage;
 import com.pisyedilionline.message.GameStartMessage;
 import com.pisyedilionline.message.Opcode;
 import com.pisyedilionline.message.PassTurnMessage;
@@ -176,9 +178,9 @@ public class GameScreen extends BaseScreen
                             Opcode.PASS_TURN.id, new byte[0]);
                 }
             }
-            else if (mainPlayer.drawn7Count > 0 && mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){ // mainPlayer has drawn for 7 and needs to draw more
+           /* else if (mainPlayer.drawn7Count > 0 && mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){ // mainPlayer has drawn for 7 and needs to draw more
                 enableDeck(true);
-            }
+            }*/
             else if (mainPlayer.enableHand(cardListener, isFirstHand, pile7Count, jiletSuit, pile.size == 0 ? null : pile.peek())){
                 enableDeck(false);
             }
@@ -212,50 +214,55 @@ public class GameScreen extends BaseScreen
 		}
     }
 
-    public void drawCard(int cardId)
+    public void drawCard(DrawCardMessage drawCardMessage)
     {
-		if (lastCardA){
-			mainPlayer.lastCardADrawn = true;
-		}
-		else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
-			mainPlayer.drawn7Count++;
-		}
-		else{
-			mainPlayer.drawnRegularCardCount++;
-		}
+		for (int i = 0; i < drawCardMessage.getdrawnCards().length; i++){
+			Card card = allCards.getCardById(drawCardMessage.getdrawnCards()[i]);
 
-    	Card card = allCards.getCardById(cardId);
-
-		RunnableAction drawCardAction = new RunnableAction();
-		drawCardAction.setRunnable(() -> {
-			mainPlayer.addCard(card);
-			update();
-		});
-		card.addAction(Actions.sequence(
-				Actions.moveTo(deck.getX(), deck.getY() ),
-				Actions.moveTo(mainPlayer.getX(), mainPlayer.getY(), 0.3f),
-				drawCardAction));
+			RunnableAction drawCardAction = new RunnableAction();
+			drawCardAction.setRunnable(() -> {
+				mainPlayer.addCard(card);
+				if (lastCardA){
+					mainPlayer.lastCardADrawn = true;
+				}
+				else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
+					mainPlayer.drawn7Count++;
+				}
+				else{
+					mainPlayer.drawnRegularCardCount++;
+				}
+				update();
+			});
+			card.addAction(Actions.sequence(
+					Actions.moveTo(deck.getX(), deck.getY()),
+					Actions.delay(0.1f * i),
+					Actions.moveTo(mainPlayer.getX(), mainPlayer.getY(), 0.3f),
+					drawCardAction));
+		}
     }
 
-    public void giveCard(int direction)
+    public void giveCard(DrawCardBroadcastMessage drawCardBroadcastMessage)
 	{
-		deckSize--;
-		if (direction != mainPlayer.getDirection())
+		deckSize = drawCardBroadcastMessage.getDeckSize();
+		if (drawCardBroadcastMessage.getDirection() != mainPlayer.getDirection())
 		{
-			game.logger.info("Player[" + direction + "] drew a card");
+			game.logger.info("Player[" + drawCardBroadcastMessage.getDirection() + "] drew a card");
 
-			final Player player = players[direction];
+			final Player player = players[drawCardBroadcastMessage.getDirection()];
 
-			final BaseCard baseCard = baseCardPool.obtain();
-			RunnableAction drawCardAction = new RunnableAction();
-			stage.addActor(baseCard);
+			for (int i = 0; i < drawCardBroadcastMessage.getCardCount(); i++){
+				final BaseCard baseCard = baseCardPool.obtain();
+				RunnableAction drawCardAction = new RunnableAction();
+				stage.addActor(baseCard);
 
-            drawCardAction.setRunnable(() -> player.addActor(baseCard));
+				drawCardAction.setRunnable(() -> player.addActor(baseCard));
 
-			baseCard.addAction(Actions.sequence(
-			        Actions.moveTo(deck.getX(), deck.getY()),
-					Actions.moveTo(player.getX(), player.getY(), 0.3f),
-					drawCardAction));
+				baseCard.addAction(Actions.sequence(
+						Actions.moveTo(deck.getX(), deck.getY()),
+						Actions.delay(0.1f * i),
+						Actions.moveTo(player.getX(), player.getY(), 0.3f),
+						drawCardAction));
+			}
 		}
 	}
 
@@ -337,9 +344,14 @@ public class GameScreen extends BaseScreen
                         game.nakama.getSocket().sendMatchData(matchId, Opcode.SHUFFLE.id, new byte[0]);
                     }
                     else{
-
-                        game.logger.info("Sending draw card message");
-                        game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, new byte[0]);
+						int cardCountToBeDrawn = 1;
+						int requiredCardDrawsFor7 = pile7Count * DRAW_CARD_COUNT_PER_7 - mainPlayer.drawn7Count;
+				    	if(requiredCardDrawsFor7 > 0){ // needs to draw for 7
+							cardCountToBeDrawn = Math.min(requiredCardDrawsFor7, deckSize);
+						}
+                        game.logger.info("Sending draw card message. Card count: " + cardCountToBeDrawn);
+						 byte[] data = Integer.toString(cardCountToBeDrawn).getBytes();
+                        game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, data);
                     }
                     // todo implement multiple card draws in the case of seven
 					//	clear listeners until server sends the card
