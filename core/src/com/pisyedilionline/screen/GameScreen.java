@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.compression.lzma.Base;
 import com.pisyedilionline.actor.BaseCard;
@@ -215,29 +217,39 @@ public class GameScreen extends BaseScreen
     }
 
     public void drawCard(DrawCardMessage drawCardMessage)
-    {
+	{
+		RunnableAction updateAction = new RunnableAction();
+		updateAction.setRunnable(() -> {
+			if (lastCardA){
+				mainPlayer.lastCardADrawn = true;
+			}
+			else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
+				mainPlayer.drawn7Count += drawCardMessage.getdrawnCards().length;
+			}
+			else{
+				mainPlayer.drawnRegularCardCount++;
+			}
+			update();
+		});
+
 		for (int i = 0; i < drawCardMessage.getdrawnCards().length; i++){
 			Card card = allCards.getCardById(drawCardMessage.getdrawnCards()[i]);
 
 			RunnableAction drawCardAction = new RunnableAction();
 			drawCardAction.setRunnable(() -> {
 				mainPlayer.addCard(card);
-				if (lastCardA){
-					mainPlayer.lastCardADrawn = true;
-				}
-				else if (mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){
-					mainPlayer.drawn7Count++;
-				}
-				else{
-					mainPlayer.drawnRegularCardCount++;
-				}
-				update();
 			});
-			card.addAction(Actions.sequence(
+
+			Action actions = Actions.sequence(
 					Actions.moveTo(deck.getX(), deck.getY()),
 					Actions.delay(0.1f * i),
 					Actions.moveTo(mainPlayer.getX(), mainPlayer.getY(), 0.3f),
-					drawCardAction));
+					drawCardAction);
+
+			if(i == drawCardMessage.getdrawnCards().length - 1){
+				((SequenceAction) actions).addAction(updateAction);
+			}
+			card.addAction(actions);
 		}
     }
 
@@ -338,10 +350,12 @@ public class GameScreen extends BaseScreen
 			deck.addListener(new InputListener()
 			{
 				@Override
-				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+				public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 
+					enableDeck(false);
 				    if (deckSize == 0){
                         game.nakama.getSocket().sendMatchData(matchId, Opcode.SHUFFLE.id, new byte[0]);
+						 game.logger.info("Sending shuffle message");
                     }
                     else{
 						int cardCountToBeDrawn = 1;
@@ -353,10 +367,6 @@ public class GameScreen extends BaseScreen
 						 byte[] data = Integer.toString(cardCountToBeDrawn).getBytes();
                         game.nakama.getSocket().sendMatchData(matchId, Opcode.DRAW_CARD.id, data);
                     }
-                    // todo implement multiple card draws in the case of seven
-					//	clear listeners until server sends the card
-                    enableDeck(false);
-
 					event.handle();
 					return true;
 				}
