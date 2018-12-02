@@ -32,6 +32,14 @@ public class GameScreen extends BaseScreen
 {
     public static final int MAX_ALLOWED_DRAW_CARD_COUNT = 3;
     public static final int DRAW_CARD_COUNT_PER_7 = 3;
+    public static final int DECK_X = 55, DECK_Y = 40;
+    public static final int PILE_X = 80, PILE_Y = 40;
+
+    //	PLAYER POSITIONS
+    public static final int NORTH_X = 80, NORTH_Y = 69;
+    public static final int SOUTH_X = 80, SOUTH_Y = 0;
+    public static final int WEST_X = 0, WEST_Y = 45;
+    public static final int EAST_X = 160, EAST_Y = 45;
 
 	final Card.Suit[] SUITS = Card.Suit.values();
 
@@ -109,7 +117,7 @@ public class GameScreen extends BaseScreen
 			}
 		}
 
-		mainPlayer.setPosition(80, 0);
+		mainPlayer.setPosition(SOUTH_X, SOUTH_Y);
 		//	set position of players
 		if (players.length == 2)
 		{
@@ -118,7 +126,7 @@ public class GameScreen extends BaseScreen
 			{
 				if (player.getDirection() != mainPlayer.getDirection())
 				{
-					player.setPosition(80, 69);
+					player.setPosition(NORTH_X, NORTH_Y);
 				}
 			}
 		}
@@ -130,15 +138,15 @@ public class GameScreen extends BaseScreen
 				{
 					if (player.getDirection() == (mainPlayer.getDirection() + 1) % message.getPlayers().length)
 					{
-						player.setPosition(0, 45);
+						player.setPosition(WEST_X, WEST_Y);
 						player.rotateBy(-90);
 					}
 					else if (player.getDirection() == (mainPlayer.getDirection() + 2) % message.getPlayers().length)
 					{
-						player.setPosition(80, 69);
+						player.setPosition(NORTH_X, NORTH_Y);
 					}
 					else if (player.getDirection() == (mainPlayer.getDirection() + 3) % message.getPlayers().length) {
-						player.setPosition(160, 45);
+						player.setPosition(EAST_X, EAST_Y);
 						player.rotateBy(90);
 					}
 				}
@@ -153,7 +161,7 @@ public class GameScreen extends BaseScreen
         //  Prepare card deck to draw
 		deck = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
         stage.addActor(deck);
-        deck.setPosition(55, 40);
+        deck.setPosition(DECK_X, DECK_Y);
 
         update();
     }
@@ -331,13 +339,13 @@ public class GameScreen extends BaseScreen
 
 			card.addAction(Actions.sequence(
 					Actions.moveTo(player.getX(), player.getY()),
-					Actions.moveTo(80 + marginX, 40 + marginY, 0.3f)));
+					Actions.moveTo(PILE_X + marginX, PILE_Y + marginY, 0.3f)));
 		}
 		else
 		{
 			//	don't play the animation if mainPlayer is this.mainPlayer
 			card.resetColor();
-			card.addAction(Actions.moveTo(80 + marginX, 40 + marginY));
+			card.addAction(Actions.moveTo(PILE_X + marginX, PILE_Y + marginY));
 		}
 	}
 
@@ -410,7 +418,7 @@ public class GameScreen extends BaseScreen
 
 		game.shapeRenderer.set(ShapeRenderer.ShapeType.Line);
 		game.shapeRenderer.setColor(Color.WHITE);
-		game.shapeRenderer.rect(80, 40, 14, 21);
+		game.shapeRenderer.rect(PILE_X, PILE_Y, 14, 21);
 		game.shapeRenderer.end();
     }
 
