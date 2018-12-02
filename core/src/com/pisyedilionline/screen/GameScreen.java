@@ -178,6 +178,11 @@ public class GameScreen extends BaseScreen
 
             boolean isFirstHand = turnCount <= players.length;
 
+            if (pile.size > 0)
+			{
+				mainPlayer.setZIndex(pile.peek().getZIndex() + 1);
+			}
+
             if (lastCardA){ // A is played previously
                 if (!mainPlayer.lastCardADrawn){
                     enableDeck(true);
