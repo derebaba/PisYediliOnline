@@ -45,8 +45,15 @@ public class CardListener extends DragListener
 		{
 			screen.getMainPlayer().playCard(card);
 
-			screen.game.nakama.getSocket().sendMatchData(screen.game.matchId,
-					Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
+			if (card.getValue() != 10)
+			{
+				screen.game.nakama.getSocket().sendMatchData(screen.game.matchId,
+						Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
+			}
+			else
+			{	//	jilet is played
+				screen.showSuits(card.getOrder());
+			}
 
 
 			screen.getMainPlayer().disableHand();

@@ -25,7 +25,6 @@ public class BaseCardPool extends Pool<BaseCard> {
 
     @Override
     protected BaseCard newObject() {
-        System.out.println("Creating new BaseCard");
         return new BaseCard(new Sprite(sprite));
     }
 }

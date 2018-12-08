@@ -4,21 +4,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.compression.lzma.Base;
-import com.pisyedilionline.actor.BaseCard;
-import com.pisyedilionline.actor.BaseCardPool;
-import com.pisyedilionline.actor.MainPlayer;
-import com.pisyedilionline.actor.Player;
+import com.pisyedilionline.actor.*;
 import com.pisyedilionline.game.AllCards;
-import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.DrawCardBroadcastMessage;
 import com.pisyedilionline.message.DrawCardMessage;
@@ -51,6 +46,8 @@ public class GameScreen extends BaseScreen
 	private int pile7Count = 0;
     private int jiletSuit = 0;
 	private boolean lastCardA = false;
+	private JiletSuit club, diamond, heart, spade;
+	private int beforeJiletCardId;
 
 
 	/**
@@ -162,6 +159,34 @@ public class GameScreen extends BaseScreen
 		deck = new BaseCard(new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class)));
         stage.addActor(deck);
         deck.setPosition(DECK_X, DECK_Y);
+
+        ClickListener suitListener = new ClickListener()
+		{
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+			{
+				game.nakama.getSocket().sendMatchData(game.matchId,
+						Opcode.PLAY_CARD.id, Integer.toString(beforeJiletCardId).getBytes());
+				club.remove();
+				diamond.remove();
+				heart.remove();
+				spade.remove();
+				return true;
+			}
+		};
+        club = new JiletSuit(new Sprite(game.assetManager.get("club.png", Texture.class)), 0);
+        club.setPosition(25, 45);
+		diamond = new JiletSuit(new Sprite(game.assetManager.get("diamond.png", Texture.class)), 1);
+		diamond.setPosition(25, 25);
+		heart = new JiletSuit(new Sprite(game.assetManager.get("heart.png", Texture.class)), 2);
+		heart.setPosition(110, 45);
+		spade = new JiletSuit(new Sprite(game.assetManager.get("spade.png", Texture.class)), 3);
+		spade.setPosition(110, 25);
+
+		club.addListener(suitListener);
+		diamond.addListener(suitListener);
+		heart.addListener(suitListener);
+		spade.addListener(suitListener);
 
         update();
     }
@@ -391,6 +416,15 @@ public class GameScreen extends BaseScreen
 		}
 	}
 
+	public void showSuits(int cardId)
+	{
+		stage.addActor(club);
+		stage.addActor(diamond);
+		stage.addActor(heart);
+		stage.addActor(spade);
+
+		beforeJiletCardId = cardId;
+	}
 
 
 	//	GETTERS AND SETTERS

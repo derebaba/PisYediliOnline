@@ -38,7 +38,6 @@ public class PisYediliOnline extends Game {
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setAutoShapeType(true);
 
-		//	TODO: add separate loggers for each class
 		//	configure logger
 		org.apache.log4j.PropertyConfigurator.configure("../../core/src/main/resources/log4j.properties");
         logger = LoggerFactory.getLogger(this.getClass());
@@ -47,6 +46,10 @@ public class PisYediliOnline extends Game {
 		//	load assets
 		assetManager.load("deck.png", Texture.class);
 		assetManager.load("regularBlue.jpg", Texture.class);
+		assetManager.load("club.png", Texture.class);
+		assetManager.load("diamond.png", Texture.class);
+		assetManager.load("heart.png", Texture.class);
+		assetManager.load("spade.png", Texture.class);
 		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         prefs =  Gdx.app.getPreferences("SessionInfo");
