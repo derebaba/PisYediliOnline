@@ -92,6 +92,14 @@ public class MainPlayer extends Player {
                     }
                 }
             }
+            else if (jiletSuit != -1) {	//	jilet is played
+            	if (card.getOrder() / 13 == jiletSuit)
+				{
+					card.getSprite().setColor(Color.WHITE);
+					card.addListener(cardListener);
+					canPlayCard = true;
+				}
+			}
             else if (card.getSuit() == topCard.getSuit()
                         || card.getValue() == topCard.getValue() ||
                         card.getValue() == 10){ // regular card rules
