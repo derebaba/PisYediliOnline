@@ -42,8 +42,8 @@ public class GameScreen extends BaseScreen
     private int jiletSuit = -1;
 	private boolean lastCardA = false;
 	private JiletSuit club, diamond, heart, spade;
+	private JiletSuit[] jiletSuits;
 	private int beforeJiletCardId;
-
 
 	/**
 	 * how many turns have passed
@@ -180,6 +180,12 @@ public class GameScreen extends BaseScreen
 		diamond.addListener(suitListener);
 		heart.addListener(suitListener);
 		spade.addListener(suitListener);
+
+		jiletSuits = new JiletSuit[4];
+		jiletSuits[0] = club;
+		jiletSuits[1] = diamond;
+		jiletSuits[2] = heart;
+		jiletSuits[3] = spade;
 
         update();
     }
@@ -338,6 +344,19 @@ public class GameScreen extends BaseScreen
 		stage.addActor(card);
 		playCard(message.getPlayerDirection(), card);
 		jiletSuit = message.getJiletSuit();
+
+		if (jiletSuit == -1)
+		{
+			for (JiletSuit suit : jiletSuits)
+			{
+				suit.remove();
+			}
+		}
+		else
+		{
+			stage.addActor(jiletSuits[jiletSuit]);
+			jiletSuits[jiletSuit].setPosition(PILE_X + 20, PILE_Y);
+		}
 	}
 
 	public void playCard(int direction, Card card)
