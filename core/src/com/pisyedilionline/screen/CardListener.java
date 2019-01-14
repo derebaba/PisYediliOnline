@@ -3,8 +3,10 @@ package com.pisyedilionline.screen;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.google.gson.Gson;
 import com.pisyedilionline.actor.Card;
 import com.pisyedilionline.message.Opcode;
+import com.pisyedilionline.message.PlayCardMessage;
 import org.jetbrains.annotations.NotNull;
 
 public class CardListener extends DragListener
@@ -45,10 +47,13 @@ public class CardListener extends DragListener
 		{
 			screen.getMainPlayer().playCard(card);
 
-			if (card.getValue() != 10)
+			boolean isFirstHand = screen.getTurnCount() < screen.getPlayers().length;
+
+			if (card.getValue() != 10 || isFirstHand)
 			{
+				PlayCardMessage message = new PlayCardMessage(card.getOrder(), screen.getMainPlayer().getDirection(), -1);
 				screen.game.nakama.getSocket().sendMatchData(screen.game.matchId,
-						Opcode.PLAY_CARD.id, Integer.toString(card.getOrder()).getBytes());
+						Opcode.PLAY_CARD.id, new Gson().toJson(message).getBytes());
 			}
 			else
 			{	//	jilet is played

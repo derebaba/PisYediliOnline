@@ -6,8 +6,6 @@ public class PassTurnMessage
 
 	private int pile7Count;
 
-	private int jiletSuit;
-
 	private boolean lastCardA;
 
 	private int turnCount;
@@ -19,10 +17,6 @@ public class PassTurnMessage
 
 	public int getPile7Count() {
 		return pile7Count;
-	}
-
-	public int getJiletSuit() {
-		return jiletSuit;
 	}
 
 	public boolean isLastCardA() {

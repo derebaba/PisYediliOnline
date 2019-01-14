@@ -12,16 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.google.gson.Gson;
 import com.pisyedilionline.actor.*;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.game.PisYediliOnline;
-import com.pisyedilionline.message.DrawCardBroadcastMessage;
-import com.pisyedilionline.message.DrawCardMessage;
-import com.pisyedilionline.message.GameStartMessage;
-import com.pisyedilionline.message.Opcode;
-import com.pisyedilionline.message.PassTurnMessage;
-import com.pisyedilionline.message.PlayerMessage;
-import com.pisyedilionline.message.ShuffleMessage;
+import com.pisyedilionline.message.*;
 
 public class GameScreen extends BaseScreen
 {
@@ -44,7 +39,7 @@ public class GameScreen extends BaseScreen
 	private int deckSize = 0;
 	private int turn;	//	whose turn is it
 	private int pile7Count = 0;
-    private int jiletSuit = 0;
+    private int jiletSuit = -1;
 	private boolean lastCardA = false;
 	private JiletSuit club, diamond, heart, spade;
 	private int beforeJiletCardId;
@@ -165,8 +160,10 @@ public class GameScreen extends BaseScreen
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
 			{
+				JiletSuit jiletSuit = (JiletSuit) event.getTarget();
+				PlayCardMessage message = new PlayCardMessage(beforeJiletCardId, mainPlayer.getDirection(), jiletSuit.getSelectedSuit());
 				game.nakama.getSocket().sendMatchData(game.matchId,
-						Opcode.PLAY_CARD.id, Integer.toString(beforeJiletCardId).getBytes());
+						Opcode.PLAY_CARD.id, new Gson().toJson(message).getBytes());
 				club.remove();
 				diamond.remove();
 				heart.remove();
@@ -175,13 +172,9 @@ public class GameScreen extends BaseScreen
 			}
 		};
         club = new JiletSuit(new Sprite(game.assetManager.get("club.png", Texture.class)), 0);
-        club.setPosition(25, 45);
 		diamond = new JiletSuit(new Sprite(game.assetManager.get("diamond.png", Texture.class)), 1);
-		diamond.setPosition(25, 25);
 		heart = new JiletSuit(new Sprite(game.assetManager.get("heart.png", Texture.class)), 2);
-		heart.setPosition(110, 45);
 		spade = new JiletSuit(new Sprite(game.assetManager.get("spade.png", Texture.class)), 3);
-		spade.setPosition(110, 25);
 
 		club.addListener(suitListener);
 		diamond.addListener(suitListener);
@@ -320,7 +313,6 @@ public class GameScreen extends BaseScreen
     	turnCount++;
         turn = passTurnMessage.getDirection();
         pile7Count = passTurnMessage.getPile7Count();
-        jiletSuit = passTurnMessage.getJiletSuit();
         lastCardA = passTurnMessage.isLastCardA();
 		turnCount = passTurnMessage.getTurnCount();
         if (turn == mainPlayer.getDirection()){
@@ -340,11 +332,12 @@ public class GameScreen extends BaseScreen
         update();
     }
 
-	public void playCard(int direction, int cardId)
+	public void playCard(PlayCardMessage message)
 	{
-		Card card = allCards.getCardById(cardId);
+		Card card = allCards.getCardById(message.getCardId());
 		stage.addActor(card);
-		playCard(direction, card);
+		playCard(message.getPlayerDirection(), card);
+		jiletSuit = message.getJiletSuit();
 	}
 
 	public void playCard(int direction, Card card)
@@ -418,6 +411,11 @@ public class GameScreen extends BaseScreen
 
 	public void showSuits(int cardId)
 	{
+		club.setPosition(25, 45);
+		diamond.setPosition(25, 25);
+		heart.setPosition(110, 45);
+		spade.setPosition(110, 25);
+
 		stage.addActor(club);
 		stage.addActor(diamond);
 		stage.addActor(heart);
@@ -433,7 +431,9 @@ public class GameScreen extends BaseScreen
 
 	public BaseCard getDeck() { return deck; }
 
-
+	public int getTurnCount() {
+		return turnCount;
+	}
 
     //	SCREEN OVERRIDE METHODS
     @Override

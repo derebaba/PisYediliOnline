@@ -106,7 +106,7 @@ public class PisClientListener implements ClientListener
 
 			case PLAY_CARD:
 				PlayCardMessage playCardMessage = gson.fromJson(data, PlayCardMessage.class);
-				Gdx.app.postRunnable(() -> gameScreen.playCard(playCardMessage.getPlayerDirection(), playCardMessage.getCardId()));
+				Gdx.app.postRunnable(() -> gameScreen.playCard(playCardMessage));
 				break;
 
 			case PASS_TURN:
