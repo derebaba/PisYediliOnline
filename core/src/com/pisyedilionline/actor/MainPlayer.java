@@ -18,55 +18,55 @@ public class MainPlayer extends Player {
         super(screen, message);
     }
 
-	public void addCard(Card card)
-	{
-		if (!hasChildren())
-		{
-			addActor(card);
-			return;
-		}
+    public void addCard(Card card)
+    {
+        if (!hasChildren())
+        {
+            addActor(card);
+            return;
+        }
 
-		for (int i = 0; i < getChildren().size - 1; i++)
-		{
-			Card currentCard = (Card) getChildren().get(i);
-			Card nextCard = (Card) getChildren().get(i + 1);
+        for (int i = 0; i < getChildren().size - 1; i++)
+        {
+            Card currentCard = (Card) getChildren().get(i);
+            Card nextCard = (Card) getChildren().get(i + 1);
 
-			if (card.getOrder() > currentCard.getOrder())
-			{
-				if (card.getOrder() < nextCard.getOrder())
-				{
-					addActorAfter(currentCard, card);
-					return;
-				}
-			}
-			else
-			{
-				addActorBefore(currentCard, card);
-				return;
-			}
-		}
+            if (card.getOrder() > currentCard.getOrder())
+            {
+                if (card.getOrder() < nextCard.getOrder())
+                {
+                    addActorAfter(currentCard, card);
+                    return;
+                }
+            }
+            else
+            {
+                addActorBefore(currentCard, card);
+                return;
+            }
+        }
 
-		addActorAt(getChildren().size, card);
-	}
+        addActorAt(getChildren().size, card);
+    }
 
-	public void playCard(Card card)
-	{
-		removeActor(card);
-		//screen.playCard(direction, card.getOrder());
-		screen.playCard(direction, card);
-	}
+    public void playCard(Card card)
+    {
+        removeActor(card);
+        //screen.playCard(direction, card.getOrder());
+        screen.playCard(direction, card);
+    }
 
-	/**
-	 *
-	 * @return true if user can play a card
-	 */
-	public boolean enableHand(InputListener cardListener, boolean isFirstHand, int pile7count, int jiletSuit, Card topCard)
-	{
-		boolean canPlayCard = false;
-		for (Actor actor : getChildren())
-		{
-			Card card = (Card) actor;
-			card.getSprite().setColor(Color.LIGHT_GRAY);
+    /**
+     *
+     * @return true if user can play a card
+     */
+    public boolean enableHand(InputListener cardListener, boolean isFirstHand, int pile7count, int jiletSuit, Card topCard)
+    {
+        boolean canPlayCard = false;
+        for (Actor actor : getChildren())
+        {
+            Card card = (Card) actor;
+            card.getSprite().setColor(Color.LIGHT_GRAY);
 
             //	first round: player can only play clubs
             if (isFirstHand){   // first hand rules
@@ -84,8 +84,8 @@ public class MainPlayer extends Player {
                 }
                 else if (drawn7Count == pile7count * GameScreen.DRAW_CARD_COUNT_PER_7){
                     if (card.getSuit() == topCard.getSuit()
-                                || card.getValue() == topCard.getValue()
-                                || card.getValue() == 10){ // regular card rules
+                            || card.getValue() == topCard.getValue()
+                            || card.getValue() == 10){ // regular card rules
                         card.getSprite().setColor(Color.WHITE);
                         card.addListener(cardListener);
                         canPlayCard = true;
@@ -93,31 +93,31 @@ public class MainPlayer extends Player {
                 }
             }
             else if (jiletSuit != -1) {	//	jilet is played
-            	if (card.getOrder() / 13 == jiletSuit)
-				{
-					card.getSprite().setColor(Color.WHITE);
-					card.addListener(cardListener);
-					canPlayCard = true;
-				}
-			}
+                if (card.getOrder() / 13 == jiletSuit)
+                {
+                    card.getSprite().setColor(Color.WHITE);
+                    card.addListener(cardListener);
+                    canPlayCard = true;
+                }
+            }
             else if (card.getSuit() == topCard.getSuit()
-                        || card.getValue() == topCard.getValue() ||
-                        card.getValue() == 10){ // regular card rules
+                    || card.getValue() == topCard.getValue() ||
+                    card.getValue() == 10){ // regular card rules
                 card.getSprite().setColor(Color.WHITE);
                 card.addListener(cardListener);
                 canPlayCard = true;
             }
-		}
-		return canPlayCard;
-	}
+        }
+        return canPlayCard;
+    }
 
-	public void disableHand()
-	{
-		for (Actor actor : getChildren())
-		{
-			Card card = (Card) actor;
-			card.getSprite().setColor(Color.LIGHT_GRAY);
-			card.clearListeners();
-		}
-	}
+    public void disableHand()
+    {
+        for (Actor actor : getChildren())
+        {
+            Card card = (Card) actor;
+            card.getSprite().setColor(Color.LIGHT_GRAY);
+            card.clearListeners();
+        }
+    }
 }

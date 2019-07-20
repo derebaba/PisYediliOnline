@@ -13,124 +13,124 @@ import com.pisyedilionline.screen.GameScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PisClientListener implements ClientListener
+public class PisClientListener implements SocketListener
 {
-	private final PisYediliOnline game;
-	private GameScreen gameScreen;
-	private List<UserPresence> connectedOpponents;
-	private Gson gson;
-	private String username;
+    private final PisYediliOnline game;
+    private GameScreen gameScreen;
+    private List<UserPresence> connectedOpponents;
+    private Gson gson;
+    private String username;
 
-	public PisClientListener(final PisYediliOnline game)
-	{
-		this.game = game;
+    public PisClientListener(final PisYediliOnline game)
+    {
+        this.game = game;
 
-		gson = new Gson();
-		connectedOpponents = new ArrayList<UserPresence>();
-	}
-
-	@Override
-	public void onDisconnect(Throwable throwable)
-	{
-		game.logger.error("Disconnected");
-		throwable.printStackTrace();
-	}
-
-    @Override
-    public void onError(Error error) {
-		game.logger.error("Client listener error");
-		error.printStackTrace();
+        gson = new Gson();
+        connectedOpponents = new ArrayList<UserPresence>();
     }
 
     @Override
-	public void onChannelMessage(ChannelMessage channelMessage)
-	{
+    public void onDisconnect(Throwable throwable)
+    {
+        game.logger.error("Disconnected");
+        throwable.printStackTrace();
+    }
 
-	}
+    @Override
+    public void onError(Error error) {
+        game.logger.error("Client listener error");
+        error.printStackTrace();
+    }
 
-	@Override
-	public void onChannelPresence(ChannelPresenceEvent channelPresenceEvent)
-	{
+    @Override
+    public void onChannelMessage(ChannelMessage channelMessage)
+    {
 
-	}
+    }
 
-	@Override
-	public void onMatchmakeMatched(final MatchmakerMatched matchmakerMatched)
-	{
-		game.matchId = matchmakerMatched.getMatchId();
+    @Override
+    public void onChannelPresence(ChannelPresenceEvent channelPresenceEvent)
+    {
 
-		game.logger.info("found match with ID: " + matchmakerMatched.getMatchId());
+    }
 
-		game.nakama.getSocket().joinMatch(matchmakerMatched.getMatchId());
-		game.logger.info("joining...");
+    @Override
+    public void onMatchmakerMatched(MatchmakerMatched matchmakerMatched)
+    {
+        game.matchId = matchmakerMatched.getMatchId();
 
-		username = matchmakerMatched.getSelf().getPresence().getUsername();
-	}
+        game.logger.info("found match with ID: " + matchmakerMatched.getMatchId());
 
-	@Override
-	public void onMatchData(final MatchData matchData)
-	{
-		String data = matchData.getData() == null ? null : new String(matchData.getData());
-		Opcode opCode = Opcode.getById(matchData.getOpCode());
-		game.logger.info("Received message with opCode " + opCode);
-		game.logger.info("Message data: " + data);
+        game.nakama.getSocket().joinMatch(matchmakerMatched.getMatchId());
+        game.logger.info("joining...");
 
-		switch (opCode)
-		{
-			case GAME_INIT:
-				GameStartMessage gameStartMessage = gson.fromJson(data, GameStartMessage.class);
+        username = matchmakerMatched.getSelf().getPresence().getUsername();
+    }
 
-				Gdx.app.postRunnable(() ->
-				{
-					Screen screen = game.getScreen();
-					GameScreen gameScreen = new GameScreen(game, gameStartMessage, username, matchData.getMatchId());
-					this.gameScreen = gameScreen;
-					game.setScreen(gameScreen);
-					screen.dispose();
-				});
-				break;
+    @Override
+    public void onMatchData(final MatchData matchData)
+    {
+        String data = matchData.getData() == null ? null : new String(matchData.getData());
+        Opcode opCode = Opcode.getById(matchData.getOpCode());
+        game.logger.info("Received message with opCode " + opCode);
+        game.logger.info("Message data: " + data);
 
-			case DRAW_CARD:
-				DrawCardMessage drawCardMessage = gson.fromJson(data, DrawCardMessage.class);
+        switch (opCode)
+        {
+            case GAME_INIT:
+                GameStartMessage gameStartMessage = gson.fromJson(data, GameStartMessage.class);
 
-				Gdx.app.postRunnable(() ->
-				{
-					gameScreen.drawCard(drawCardMessage);
-				});
-				break;
+                Gdx.app.postRunnable(() ->
+                {
+                    Screen screen = game.getScreen();
+                    GameScreen gameScreen = new GameScreen(game, gameStartMessage, username, matchData.getMatchId());
+                    this.gameScreen = gameScreen;
+                    game.setScreen(gameScreen);
+                    screen.dispose();
+                });
+                break;
 
-			case DRAW_CARD_BROADCAST:
-				DrawCardBroadcastMessage drawCardBroadcastMessage = gson.fromJson(data, DrawCardBroadcastMessage.class);
-				Gdx.app.postRunnable(() -> gameScreen.giveCard(drawCardBroadcastMessage));
-				break;
+            case DRAW_CARD:
+                DrawCardMessage drawCardMessage = gson.fromJson(data, DrawCardMessage.class);
 
-			case PLAY_CARD:
-				PlayCardMessage playCardMessage = gson.fromJson(data, PlayCardMessage.class);
-				Gdx.app.postRunnable(() -> gameScreen.playCard(playCardMessage));
-				break;
+                Gdx.app.postRunnable(() ->
+                {
+                    gameScreen.drawCard(drawCardMessage);
+                });
+                break;
 
-			case PASS_TURN:
-				PassTurnMessage passTurnMessage = gson.fromJson(data, PassTurnMessage.class);
-				Gdx.app.postRunnable(() ->
-				{
-				    gameScreen.passTurn(passTurnMessage);
-				});
-				break;
+            case DRAW_CARD_BROADCAST:
+                DrawCardBroadcastMessage drawCardBroadcastMessage = gson.fromJson(data, DrawCardBroadcastMessage.class);
+                Gdx.app.postRunnable(() -> gameScreen.giveCard(drawCardBroadcastMessage));
+                break;
 
-			case SHUFFLE:
+            case PLAY_CARD:
+                PlayCardMessage playCardMessage = gson.fromJson(data, PlayCardMessage.class);
+                Gdx.app.postRunnable(() -> gameScreen.playCard(playCardMessage));
+                break;
+
+            case PASS_TURN:
+                PassTurnMessage passTurnMessage = gson.fromJson(data, PassTurnMessage.class);
+                Gdx.app.postRunnable(() ->
+                {
+                    gameScreen.passTurn(passTurnMessage);
+                });
+                break;
+
+            case SHUFFLE:
                 ShuffleMessage shuffleMessage = gson.fromJson(data, ShuffleMessage.class);
-				Gdx.app.postRunnable(() ->
-				{
-				    gameScreen.shufflePileIntoDeck(shuffleMessage);
-				});
-				break;
-		}
-	}
+                Gdx.app.postRunnable(() ->
+                {
+                    gameScreen.shufflePileIntoDeck(shuffleMessage);
+                });
+                break;
+        }
+    }
 
-	@Override
-	public void onMatchPresence(final MatchPresenceEvent matchPresenceEvent)
-	{
-		game.logger.info("Present in match");
+    @Override
+    public void onMatchPresence(final MatchPresenceEvent matchPresenceEvent)
+    {
+        game.logger.info("Present in match");
 
 
 /*
@@ -147,29 +147,29 @@ public class PisClientListener implements ClientListener
 			}
 		};
 */
-	}
+    }
 
-	@Override
-	public void onNotifications(NotificationList notificationList)
-	{
+    @Override
+    public void onNotifications(NotificationList notificationList)
+    {
 
-	}
+    }
 
-	@Override
-	public void onStatusPresence(StatusPresenceEvent statusPresenceEvent)
-	{
+    @Override
+    public void onStatusPresence(StatusPresenceEvent statusPresenceEvent)
+    {
 
-	}
+    }
 
-	@Override
-	public void onStreamPresence(StreamPresenceEvent streamPresenceEvent)
-	{
+    @Override
+    public void onStreamPresence(StreamPresenceEvent streamPresenceEvent)
+    {
 
-	}
+    }
 
-	@Override
-	public void onStreamData(StreamData streamData)
-	{
+    @Override
+    public void onStreamData(StreamData streamData)
+    {
 
-	}
+    }
 }
