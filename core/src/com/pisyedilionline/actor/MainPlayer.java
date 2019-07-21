@@ -20,38 +20,38 @@ public class MainPlayer extends Player {
 
     public void addCard(Card card)
     {
-        if (!hasChildren())
+        if (!cards.hasChildren())
         {
-            addActor(card);
+            cards.addActor(card);
             return;
         }
 
-        for (int i = 0; i < getChildren().size - 1; i++)
+        for (int i = 0; i < cards.getChildren().size - 1; i++)
         {
-            Card currentCard = (Card) getChildren().get(i);
-            Card nextCard = (Card) getChildren().get(i + 1);
+            Card currentCard = (Card) cards.getChildren().get(i);
+            Card nextCard = (Card) cards.getChildren().get(i + 1);
 
             if (card.getOrder() > currentCard.getOrder())
             {
                 if (card.getOrder() < nextCard.getOrder())
                 {
-                    addActorAfter(currentCard, card);
+                    cards.addActorAfter(currentCard, card);
                     return;
                 }
             }
             else
             {
-                addActorBefore(currentCard, card);
+                cards.addActorBefore(currentCard, card);
                 return;
             }
         }
 
-        addActorAt(getChildren().size, card);
+        cards.addActorAt(cards.getChildren().size, card);
     }
 
     public void playCard(Card card)
     {
-        removeActor(card);
+        cards.removeActor(card);
         //screen.playCard(direction, card.getOrder());
         screen.playCard(direction, card);
     }
@@ -63,7 +63,7 @@ public class MainPlayer extends Player {
     public boolean enableHand(InputListener cardListener, boolean isFirstHand, int pile7count, int jiletSuit, Card topCard)
     {
         boolean canPlayCard = false;
-        for (Actor actor : getChildren())
+        for (Actor actor : cards.getChildren())
         {
             Card card = (Card) actor;
             card.getSprite().setColor(Color.LIGHT_GRAY);
@@ -113,7 +113,7 @@ public class MainPlayer extends Player {
 
     public void disableHand()
     {
-        for (Actor actor : getChildren())
+        for (Actor actor : cards.getChildren())
         {
             Card card = (Card) actor;
             card.getSprite().setColor(Color.LIGHT_GRAY);

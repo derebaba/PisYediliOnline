@@ -35,7 +35,7 @@ public abstract class BaseScreen implements Screen {
     @Override
     public void resize(int width, int height){
         stage.getViewport().update(width, height);
-        camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
+        camera.position.set(camera.viewportWidth / 2,camera.viewportHeight / 2,0);
     }
 
     @Override
