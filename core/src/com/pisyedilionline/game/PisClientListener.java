@@ -55,7 +55,7 @@ public class PisClientListener implements SocketListener
     }
 
     @Override
-    public void onMatchmakerMatched(MatchmakerMatched matchmakerMatched)
+    public void onMatchmakerMatched(final MatchmakerMatched matchmakerMatched)
     {
         game.matchId = matchmakerMatched.getMatchId();
 

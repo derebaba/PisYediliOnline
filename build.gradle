@@ -118,7 +118,7 @@ project(":core") {
     apply plugin: "java-library"
 
     dependencies {
-        api files('libs/nakama-java-2.0.1-all.jar')
+        api files('libs/nakama-java-2.0.4-all.jar')
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api 'com.google.code.gson:gson:2.8.5'
         api group: 'log4j', name: 'log4j', version: '1.2.17'

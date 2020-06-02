@@ -7,6 +7,8 @@ import PisYediliOnline.BuildConfig;
 
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NakamaSessionManager
 {
@@ -64,7 +66,8 @@ public class NakamaSessionManager
             return socket.connect(session, new PisClientListener(game));
         };
 
-        final ListenableFuture<Session> authenticateFuture = Futures.transformAsync(authentication, onAuthenticate);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        final ListenableFuture<Session> authenticateFuture = Futures.transformAsync(authentication, onAuthenticate, executor);
 
         final Function<Session, Object> assignSession = session ->
         {
@@ -74,6 +77,6 @@ public class NakamaSessionManager
             return null;
         };
 
-        Futures.transform(authenticateFuture, assignSession);
+        Futures.transform(authenticateFuture, assignSession, executor);
     }
 }

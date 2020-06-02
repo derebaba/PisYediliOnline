@@ -9,6 +9,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.heroiclabs.nakama.MatchmakerTicket;
 import com.pisyedilionline.game.PisYediliOnline;
 
+import java.util.concurrent.Executors;
+
 public class MainMenuScreen extends BaseScreen
 {
     private TextButton findMatchButton;
@@ -54,7 +56,7 @@ public class MainMenuScreen extends BaseScreen
                         }
                         return null;
                     };
-                    Futures.transform(matchmakerTicketListenableFuture, assignMatchmakerQueue);
+                    Futures.transform(matchmakerTicketListenableFuture, assignMatchmakerQueue, Executors.newSingleThreadExecutor());
 
                     findMatchButton.setText("Find a Match");
                 }
