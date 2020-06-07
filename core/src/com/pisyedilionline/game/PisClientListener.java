@@ -124,6 +124,10 @@ public class PisClientListener implements SocketListener
                     gameScreen.shufflePileIntoDeck(shuffleMessage);
                 });
                 break;
+
+            case END_GAME:
+                gameScreen.endGame(data);
+                break;
         }
     }
 

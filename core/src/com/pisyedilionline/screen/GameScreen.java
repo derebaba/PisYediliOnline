@@ -4,12 +4,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.google.gson.Gson;
@@ -369,10 +371,10 @@ public class GameScreen extends BaseScreen
 
         Player player = players[direction];
 
-        //int marginX = MathUtils.random(-2,3);
-        //int marginY = MathUtils.random(-2,3);
-        int marginX = 0;
-        int marginY = 0;
+        int marginX = MathUtils.random(-2,3);
+        int marginY = MathUtils.random(-2,3);
+        //int marginX = 0;
+        //int marginY = 0;
 
         if (mainPlayer.getDirection() !=  player.getDirection())
         {
@@ -443,6 +445,20 @@ public class GameScreen extends BaseScreen
         beforeJiletCardId = cardId;
     }
 
+    public void endGame(String message)
+    {
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = game.font;
+        labelStyle.fontColor = Color.GOLD;
+
+        Label label = new Label(message, labelStyle);
+
+        label.setPosition(40, WORLD_HEIGHT / 2);
+
+        stage.addActor(label);
+
+        label.setZIndex(200);
+    }
 
     //	GETTERS AND SETTERS
 

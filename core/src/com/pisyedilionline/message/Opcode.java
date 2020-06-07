@@ -6,7 +6,8 @@ public enum Opcode {
 	DRAW_CARD_BROADCAST(3),
 	PLAY_CARD(4),
 	PASS_TURN(5),
-    SHUFFLE(6);
+    SHUFFLE(6),
+    END_GAME(7);
 
     public long id;
 
