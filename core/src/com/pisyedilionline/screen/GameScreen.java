@@ -56,7 +56,7 @@ public class GameScreen extends BaseScreen
 
     //	CARDS
     private AllCards allCards;
-    private Array<Card> pile;
+    private Pile pile;
     private BaseCardPool baseCardPool = null;
     private BaseCard deck;
 
@@ -73,7 +73,9 @@ public class GameScreen extends BaseScreen
             stage.addActor(card);
         }
 
-        pile = new Array<Card>();
+        pile = new Pile(this);
+        stage.addActor(pile);
+        pile.setPosition(PILE_X, PILE_Y);
 
         Sprite baseCardSprite = new Sprite(game.assetManager.get("regularBlue.jpg", Texture.class));
         baseCardPool = new BaseCardPool(baseCardSprite, 52, 52);
@@ -203,12 +205,12 @@ public class GameScreen extends BaseScreen
             CardListener cardListener = new CardListener(this);
 
             boolean isFirstHand = turnCount <= players.length;
-
+/*
             if (pile.size > 0)
             {
                 mainPlayer.setZIndex(pile.peek().getZIndex() + 1);
             }
-
+*/
             if (lastCardA){ // A is played previously
                 if (!mainPlayer.lastCardADrawn){
                     enableDeck(true);
@@ -335,7 +337,7 @@ public class GameScreen extends BaseScreen
     public void shufflePileIntoDeck(ShuffleMessage shuffleMessage){
         deckSize = shuffleMessage.getDeckSize();
         pile.clear();
-        pile.add(allCards.getCardById(shuffleMessage.getTopCard()));
+        pile.addActor(allCards.getCardById(shuffleMessage.getTopCard()));
 
         update();
     }
@@ -365,7 +367,7 @@ public class GameScreen extends BaseScreen
     {
         card.clearListeners();
 
-        pile.add(card);
+        pile.addActor(card);
 
         card.setZIndex(100 + turnCount);   //  100 is arbitrary
 
@@ -383,13 +385,13 @@ public class GameScreen extends BaseScreen
 
             card.addAction(Actions.sequence(
                     Actions.moveTo(player.getX(), player.getY()),
-                    Actions.moveTo(PILE_X + marginX, PILE_Y + marginY, 0.3f)));
+                    Actions.moveTo(marginX, marginY, 0.3f)));
         }
         else
         {
-            //	don't play the animation if mainPlayer is this.mainPlayer
             card.resetColor();
-            card.addAction(Actions.moveTo(PILE_X + marginX, PILE_Y + marginY));
+            card.addAction(Actions.sequence(
+                    Actions.moveTo(0, 0),Actions.moveTo(marginX, marginX, 0.1f)));
         }
     }
 

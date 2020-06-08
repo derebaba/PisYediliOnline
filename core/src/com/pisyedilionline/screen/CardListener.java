@@ -45,7 +45,7 @@ public class CardListener extends DragListener
 
         if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
         {
-            screen.getMainPlayer().playCard(card);
+            //screen.getMainPlayer().playCard(card);
 
             boolean isFirstHand = screen.getTurnCount() < screen.getPlayers().length;
 
