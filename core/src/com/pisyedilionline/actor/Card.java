@@ -23,17 +23,6 @@ public class Card extends BaseCard implements Comparable<Card> {
         this.value = value;
         this.order = order;
 
-        addListener(new ClickListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                /*screen.playCard((Card) event.getTarget());
-
-                screen.game.logger.info("Played card: " + suit + " " + value);
-*/
-                event.handle();//the Stage will stop trying to handle this event
-                return true; //the inputmultiplexer will stop trying to handle this touch
-            }
-        });
     }
 
     public int getValue() {

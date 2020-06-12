@@ -13,12 +13,14 @@ import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.Array;
 import com.google.gson.Gson;
 import com.pisyedilionline.actor.*;
 import com.pisyedilionline.game.AllCards;
 import com.pisyedilionline.game.PisYediliOnline;
 import com.pisyedilionline.message.*;
+import org.jetbrains.annotations.NotNull;
 
 public class GameScreen extends BaseScreen
 {
@@ -53,6 +55,7 @@ public class GameScreen extends BaseScreen
     private int turnCount = 0;
 
     private String matchId;
+    private DragListener dragListener;
 
     //	CARDS
     private AllCards allCards;
@@ -191,6 +194,56 @@ public class GameScreen extends BaseScreen
         jiletSuits[2] = heart;
         jiletSuits[3] = spade;
 
+        dragListener = new DragListener() {
+
+            private float startX, startY;
+
+            public boolean touchDown(@NotNull InputEvent event, float x, float y, int pointer, int button)
+            {
+                startX = event.getTarget().getX();
+                startY = event.getTarget().getY();
+
+                return true;
+            }
+
+            public void touchDragged(@NotNull InputEvent event, float x, float y, int pointer)
+            {
+                Card card = (Card) event.getTarget();
+
+                card.moveBy(x - card.getWidth() / 2, y - card.getHeight() / 2);
+            }
+
+            public void touchUp(@NotNull InputEvent event, float x, float y, int pointer, int button)
+            {
+                float stageX = event.getStageX(), stageY = event.getStageY();
+
+                Card card = (Card) event.getTarget();
+
+                if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
+                {
+                    boolean isFirstHand = getTurnCount() < getPlayers().length;
+
+                    if (card.getValue() != 10 || isFirstHand)
+                    {
+                        PlayCardMessage message = new PlayCardMessage(card.getOrder(), getMainPlayer().getDirection(), -1);
+                        game.nakama.getSocket().sendMatchData(game.matchId,
+                                Opcode.PLAY_CARD.id, new Gson().toJson(message).getBytes());
+                    }
+                    else
+                    {	//	jilet is played
+                        showSuits(card.getOrder());
+                    }
+
+                    getMainPlayer().disableHand();
+                    enableDeck(false);
+                }
+                else
+                {
+                    card.addAction(Actions.moveTo(startX, startY, 0.1f));
+                }
+            }
+        };
+
         update();
     }
 
@@ -202,7 +255,6 @@ public class GameScreen extends BaseScreen
         {
             turnX = 80;
             turnY = 5;
-            CardListener cardListener = new CardListener(this);
 
             boolean isFirstHand = turnCount <= players.length;
 /*
@@ -224,7 +276,7 @@ public class GameScreen extends BaseScreen
            /* else if (mainPlayer.drawn7Count > 0 && mainPlayer.drawn7Count < pile7Count * DRAW_CARD_COUNT_PER_7){ // mainPlayer has drawn for 7 and needs to draw more
                 enableDeck(true);
             }*/
-            else if (mainPlayer.enableHand(cardListener, isFirstHand, pile7Count, jiletSuit, pile.size == 0 ? null : pile.peek())){
+            else if (mainPlayer.enableHand(dragListener, isFirstHand, pile7Count, jiletSuit, pile.size == 0 ? null : pile.peek())){
                 enableDeck(false);
             }
             else if (isFirstHand){ // first hand, mainPlayer can draw as many
