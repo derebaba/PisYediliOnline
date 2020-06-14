@@ -59,12 +59,12 @@ public class PisClientListener implements SocketListener
     {
         game.matchId = matchmakerMatched.getMatchId();
 
-        game.logger.info("found match with ID: " + matchmakerMatched.getMatchId());
-
         game.nakama.getSocket().joinMatch(matchmakerMatched.getMatchId());
         game.logger.info("joining...");
 
         username = matchmakerMatched.getSelf().getPresence().getUsername();
+
+        game.logger.debug("found match with ID: " + matchmakerMatched.getMatchId() + ", username: "  + username);
     }
 
     @Override

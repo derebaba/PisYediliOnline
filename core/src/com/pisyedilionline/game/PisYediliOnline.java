@@ -41,6 +41,7 @@ public class PisYediliOnline extends Game {
 		//	configure logger
 		org.apache.log4j.PropertyConfigurator.configure("../../core/src/main/resources/log4j.properties");
         logger = LoggerFactory.getLogger(this.getClass());
+        logger.debug("LibGdx version: " + com.badlogic.gdx.Version.VERSION);
 
         assetManager = new AssetManager();
 		//	load assets
@@ -55,7 +56,6 @@ public class PisYediliOnline extends Game {
         prefs =  Gdx.app.getPreferences("SessionInfo");
 
         nakama = new NakamaSessionManager(this);
-		nakama.start();
 
 		batch = new SpriteBatch();
 

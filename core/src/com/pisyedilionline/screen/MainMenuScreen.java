@@ -2,12 +2,16 @@ package com.pisyedilionline.screen;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.google.common.base.Function;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.protobuf.Empty;
 import com.heroiclabs.nakama.MatchmakerTicket;
 import com.pisyedilionline.game.PisYediliOnline;
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.util.concurrent.Executors;
 
@@ -18,17 +22,20 @@ public class MainMenuScreen extends BaseScreen
     private boolean inMMQueue = false;
     private float deltaCounter = 0;
     private ListenableFuture<MatchmakerTicket> matchmakerTicketListenableFuture;
+    private final TextField nameField;
 
     public MainMenuScreen(final PisYediliOnline game)
     {
         super(game);
 
-        findMatchButton = new TextButton("Find a Match", game.skin);
-        stage.addActor(findMatchButton);
+        nameField = new TextField("", game.skin);
+        nameField.setSize(50, 20);
+        nameField.setPosition(50, 60);
+        stage.addActor(nameField);
 
-        findMatchButton.setVisible(false);
+        findMatchButton = new TextButton("Find a Match", game.skin);
         findMatchButton.setSize(50, 20);
-        findMatchButton.setPosition(50, 50);
+        findMatchButton.setPosition(50, 40);
         findMatchButton.getLabel().setFontScale(0.5f);
         findMatchButton.addListener(new ClickListener()
         {
@@ -36,15 +43,31 @@ public class MainMenuScreen extends BaseScreen
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
                 if(!inMMQueue){
-                    String query = "*";
-                    int minCount = 2;
-                    int maxCount = 2;
+                    nameField.setDisabled(true);
+                    ListenableFuture<Void> connect = game.nakama.start(nameField.getText());
 
-                    matchmakerTicketListenableFuture = game.nakama.getSocket().addMatchmaker(minCount, maxCount, query);
-                    game.logger.info("Started matchmaking...");
+                    FutureCallback<Void> addMatchmaker = new FutureCallback<Void>() {
+                        @Override
+                        public void onSuccess(@NullableDecl Void aVoid) {
+                            String query = "*";
+                            int minCount = 2;
+                            int maxCount = 2;
+                            matchmakerTicketListenableFuture = game.nakama.getSocket().addMatchmaker(minCount, maxCount, query);
 
-                    findMatchButton.setText("Abort Search");
-                    deltaCounter = 0;
+                            game.logger.info("Started matchmaking...");
+
+                            findMatchButton.setText("Abort Search");
+
+                            deltaCounter = 0;
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+
+                        }
+                    };
+
+                    Futures.addCallback(connect, addMatchmaker, Executors.newSingleThreadExecutor());
                 }
                 else{
 
@@ -59,19 +82,22 @@ public class MainMenuScreen extends BaseScreen
                     Futures.transform(matchmakerTicketListenableFuture, assignMatchmakerQueue, Executors.newSingleThreadExecutor());
 
                     findMatchButton.setText("Find a Match");
+                    nameField.setDisabled(false);
                 }
                 inMMQueue = !inMMQueue;
                 return true;
             }
         });
+        stage.addActor(findMatchButton);
     }
 
     @Override
     public void render(float delta)
     {
         super.render(delta);
-
+/*
         findMatchButton.setVisible(game.isConnected());
+        nameField.setVisible(game.isConnected());
 
         if (!game.isConnected())
         {
@@ -80,7 +106,7 @@ public class MainMenuScreen extends BaseScreen
             game.batch.end();
             return;
         }
-
+*/
         if (inMMQueue){
             deltaCounter += delta;
             int seconds = (int)deltaCounter;

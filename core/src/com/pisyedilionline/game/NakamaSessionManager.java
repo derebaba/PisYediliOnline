@@ -2,10 +2,11 @@ package com.pisyedilionline.game;
 
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.*;
+import com.google.protobuf.Empty;
 import com.heroiclabs.nakama.*;
-import PisYediliOnline.BuildConfig;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +16,7 @@ public class NakamaSessionManager
     private final Client client;
     private final PisYediliOnline game;
 
+    private String deviceId;
     private Session session;
     private SocketClient socket;
 
@@ -25,11 +27,13 @@ public class NakamaSessionManager
 
         //client = new DefaultClient(BuildConfig.ServerKey, BuildConfig.Host, BuildConfig.Port, false);
         client = new DefaultClient("defaultkey", "localhost", 7349, false);	//	uncomment for local development
+
+        deviceId = UUID.randomUUID().toString();
     }
 
     public SocketClient getSocket() { return socket; }
 
-    public void start()
+    public ListenableFuture<Void> start(String username)
     {
         // Lets check if we can restore a cached session.
 		/*
@@ -50,15 +54,15 @@ public class NakamaSessionManager
 			game.logger.info("Session is expired.");
 		}
 		*/
-        String deviceId = UUID.randomUUID().toString();
-        final ListenableFuture<Session> authentication = client.authenticateDevice(deviceId);
+
+        final ListenableFuture<Session> authentication = client.authenticateDevice(deviceId, username);
 
         final AsyncFunction<Session, Session> onAuthenticate = session ->
         {
             // Login was successful.
             // Store the session for later use.
             game.prefs.putString("nk.session", session.getAuthToken());
-            game.prefs.flush();
+            game.prefs.flush(); // TODO: sonra kaldırılacak
 
             game.logger.info("Authentication is successful.");
 
@@ -69,14 +73,15 @@ public class NakamaSessionManager
         ExecutorService executor = Executors.newSingleThreadExecutor();
         final ListenableFuture<Session> authenticateFuture = Futures.transformAsync(authentication, onAuthenticate, executor);
 
-        final Function<Session, Object> assignSession = session ->
+        final Function<Session, Void> assignSession = session ->
         {
             game.logger.info("soket kuruldu");
             this.session = session;
             game.setConnected(true);
+
             return null;
         };
 
-        Futures.transform(authenticateFuture, assignSession, executor);
+        return Futures.transform(authenticateFuture, assignSession, executor);
     }
 }
