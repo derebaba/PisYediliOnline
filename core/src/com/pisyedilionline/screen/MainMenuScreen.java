@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 
 public class MainMenuScreen extends BaseScreen
 {
-    private TextButton findMatchButton;
+    private final TextButton findMatchButton;
 
     private boolean inMMQueue = false;
     private float deltaCounter = 0;
@@ -36,7 +36,7 @@ public class MainMenuScreen extends BaseScreen
         findMatchButton = new TextButton("Find a Match", game.skin);
         findMatchButton.setSize(50, 20);
         findMatchButton.setPosition(50, 40);
-        findMatchButton.getLabel().setFontScale(0.5f);
+        findMatchButton.getLabel().setFontScale(0.1f);
         findMatchButton.addListener(new ClickListener()
         {
             @Override

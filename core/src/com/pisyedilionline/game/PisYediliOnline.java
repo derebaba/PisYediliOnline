@@ -51,6 +51,7 @@ public class PisYediliOnline extends Game {
 		assetManager.load("diamond.png", Texture.class);
 		assetManager.load("heart.png", Texture.class);
 		assetManager.load("spade.png", Texture.class);
+		assetManager.load("speech_bubble.png", Texture.class);
 		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         prefs =  Gdx.app.getPreferences("SessionInfo");

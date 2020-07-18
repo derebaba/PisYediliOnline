@@ -7,7 +7,9 @@ public enum Opcode {
 	PLAY_CARD(4),
 	PASS_TURN(5),
     SHUFFLE(6),
-    END_GAME(7);
+    END_GAME(7),
+    CHAT_SEND(8),
+    CHAT_RECEIVE(9);
 
     public long id;
 

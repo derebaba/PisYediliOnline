@@ -128,6 +128,10 @@ public class PisClientListener implements SocketListener
             case END_GAME:
                 gameScreen.endGame(data);
                 break;
+
+            case CHAT_RECEIVE:
+
+                break;
         }
     }
 

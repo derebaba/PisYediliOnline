@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
-import com.badlogic.gdx.utils.Array;
 import com.google.gson.Gson;
 import com.pisyedilionline.actor.*;
 import com.pisyedilionline.game.AllCards;
@@ -243,6 +241,12 @@ public class GameScreen extends BaseScreen
                 }
             }
         };
+
+        ChatButtons chatButtons = new ChatButtons(game, this);
+        chatButtons.setSize(40, 40);
+        chatButtons.setPosition(0, 0);
+        chatButtons.addButton(14, ChatMessage.REYIZ);
+        stage.addActor(chatButtons);
 
         update();
     }

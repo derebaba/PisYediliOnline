@@ -49,13 +49,6 @@ public class MainPlayer extends Player {
         cards.addActorAt(cards.getChildren().size, card);
     }
 
-    public void playCard(Card card)
-    {
-        cards.removeActor(card);
-        //screen.playCard(direction, card.getOrder());
-        screen.playCard(direction, card);
-    }
-
     /**
      *
      * @return true if user can play a card
