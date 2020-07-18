@@ -36,7 +36,7 @@ public class Player extends Group
 
         nameLabel = new Label(name, labelStyle);
         addActor(nameLabel);
-        nameLabel.setPosition(-10, 10);
+        nameLabel.setPosition(-80, 80);
 
         cards = new Group() {
             @Override
@@ -47,7 +47,7 @@ public class Player extends Group
                 {
                     BaseCard card = (BaseCard) getChildren().get(i);
                     card.setZIndex(i);
-                    card.setPosition(5 * (i - childrenCount / 2), 0);
+                    card.setPosition(40 * (i - childrenCount / 2), 0);
                     card.setBounds(card.getX(), card.getY(),
                             card.getSprite().getWidth(), card.getSprite().getHeight());
                 }
@@ -59,8 +59,8 @@ public class Player extends Group
 
         speechBubble = new Image(screen.game.assetManager.get("speech_bubble.png", Texture.class));
         //addActor(speechBubble); belki sonra ekleriz
-        speechBubble.setSize(30, 20);
-        speechBubble.setPosition(-10, 20);
+        speechBubble.setSize(240, 160);
+        speechBubble.setPosition(-80, 160);
 
         nameLabel.setTouchable(Touchable.disabled);
 		setTransform(true);

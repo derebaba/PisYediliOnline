@@ -32,8 +32,7 @@ public class ChatButtons extends Group {
 
         title = new Label("Quick chat", labelStyle);
         title.setPosition(0, 0);
-        title.setFontScale(0.5f);
-        title.setSize(getWidth(), 10);
+        title.setSize(getWidth(), 80);
         title.setTouchable(Touchable.disabled);
         addActor(title);
     }
@@ -41,7 +40,6 @@ public class ChatButtons extends Group {
     public void addButton(int messageCode, String message)
     {
         TextButton button = new TextButton(message, game.skin);
-        button.getLabel().setFontScale(0.2f);
         button.setX(getX());
         button.addListener(new ClickListener()
         {
@@ -58,9 +56,9 @@ public class ChatButtons extends Group {
         for (int i = 0; i < getChildren().size; i++)
         {
             Actor child = getChild(i);
-            button.setSize(getWidth(), 10);
-            child.setY(10 * i);
+            button.setSize(getWidth(), 80);
+            child.setY(80 * i);
         }
-        title.setPosition(0, (getChildren().size - 1) * 10);
+        title.setPosition(0, (getChildren().size - 1) * 80);
     }
 }

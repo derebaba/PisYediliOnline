@@ -24,14 +24,14 @@ public class GameScreen extends BaseScreen
 {
     public static final int MAX_ALLOWED_DRAW_CARD_COUNT = 3;
     public static final int DRAW_CARD_COUNT_PER_7 = 3;
-    public static final int DECK_X = 55, DECK_Y = 40;
-    public static final int PILE_X = 80, PILE_Y = 40;
+    public static final int DECK_X = 440, DECK_Y = 320;
+    public static final int PILE_X = 640, PILE_Y = 320;
 
     //	PLAYER POSITIONS
-    public static final int NORTH_X = 80, NORTH_Y = 69;
-    public static final int SOUTH_X = 80, SOUTH_Y = 0;
-    public static final int WEST_X = 0, WEST_Y = 45;
-    public static final int EAST_X = 160, EAST_Y = 45;
+    public static final int NORTH_X = 640, NORTH_Y = 560;
+    public static final int SOUTH_X = 640, SOUTH_Y = 0;
+    public static final int WEST_X = 0, WEST_Y = 360;
+    public static final int EAST_X = 1280, EAST_Y = 360;
 
     final Card.Suit[] SUITS = Card.Suit.values();
 
@@ -217,7 +217,7 @@ public class GameScreen extends BaseScreen
 
                 Card card = (Card) event.getTarget();
 
-                if (stageX > 70 && stageX < 100 && stageY > 35 && stageY < 65)
+                if (stageX > PILE_X && stageX < PILE_X + BaseCard.WITDH && stageY > PILE_Y && stageY < PILE_Y + BaseCard.HEIGHT)
                 {
                     boolean isFirstHand = getTurnCount() < getPlayers().length;
 
@@ -243,7 +243,7 @@ public class GameScreen extends BaseScreen
         };
 
         ChatButtons chatButtons = new ChatButtons(game, this);
-        chatButtons.setSize(40, 40);
+        chatButtons.setSize(320, 320);
         chatButtons.setPosition(0, 0);
         chatButtons.addButton(14, ChatMessage.REYIZ);
         stage.addActor(chatButtons);
@@ -257,8 +257,8 @@ public class GameScreen extends BaseScreen
 
         if (turn == mainPlayer.getDirection())
         {
-            turnX = 80;
-            turnY = 5;
+            turnX = 640;
+            turnY = 40;
 
             boolean isFirstHand = turnCount <= players.length;
 /*
@@ -415,7 +415,7 @@ public class GameScreen extends BaseScreen
         else
         {
             stage.addActor(jiletSuits[jiletSuit]);
-            jiletSuits[jiletSuit].setPosition(PILE_X + 20, PILE_Y);
+            jiletSuits[jiletSuit].setPosition(PILE_X + 160, PILE_Y);
         }
     }
 
@@ -429,8 +429,8 @@ public class GameScreen extends BaseScreen
 
         Player player = players[direction];
 
-        int marginX = MathUtils.random(-2,3);
-        int marginY = MathUtils.random(-2,3);
+        int marginX = MathUtils.random(-10,15);
+        int marginY = MathUtils.random(-10,15);
         //int marginX = 0;
         //int marginY = 0;
 
@@ -447,7 +447,7 @@ public class GameScreen extends BaseScreen
         {
             card.resetColor();
             card.addAction(Actions.sequence(
-                    Actions.moveTo(0, 0),Actions.moveTo(marginX, marginX, 0.1f)));
+                    Actions.moveTo(0, 0),Actions.moveTo(marginX, marginY, 0.1f)));
         }
     }
 
@@ -490,10 +490,10 @@ public class GameScreen extends BaseScreen
 
     public void showSuits(int cardId)
     {
-        club.setPosition(25, 45);
-        diamond.setPosition(25, 25);
-        heart.setPosition(110, 45);
-        spade.setPosition(110, 25);
+        club.setPosition(200, 360);
+        diamond.setPosition(200, 200);
+        heart.setPosition(880, 360);
+        spade.setPosition(880, 200);
 
         stage.addActor(club);
         stage.addActor(diamond);
@@ -511,7 +511,7 @@ public class GameScreen extends BaseScreen
 
         Label label = new Label(message, labelStyle);
 
-        label.setPosition(40, WORLD_HEIGHT / 2);
+        label.setPosition(320, WORLD_HEIGHT / 2);
 
         stage.addActor(label);
 
@@ -539,7 +539,7 @@ public class GameScreen extends BaseScreen
         super.render(delta);
 
         game.batch.begin();
-        game.font.draw(game.batch, Integer.toString(deckSize),55, 38);
+        game.font.draw(game.batch, Integer.toString(deckSize),440, 320);
         //game.font.draw(game.batch, Integer.toString(opponent.getHand().size), opponent.getX() + 20, opponent.getY() + 10);
         game.batch.end();
 
@@ -550,7 +550,7 @@ public class GameScreen extends BaseScreen
 
         game.shapeRenderer.set(ShapeRenderer.ShapeType.Line);
         game.shapeRenderer.setColor(Color.WHITE);
-        game.shapeRenderer.rect(PILE_X, PILE_Y, 14, 21);
+        game.shapeRenderer.rect(PILE_X, PILE_Y, 112, 168);
         game.shapeRenderer.end();
     }
 

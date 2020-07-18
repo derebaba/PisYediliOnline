@@ -9,13 +9,14 @@ import com.badlogic.gdx.utils.Pool;
 
 public class BaseCard extends Actor implements Pool.Poolable
 {
+    public static final int HEIGHT = 168, WITDH = 112;
     protected Sprite sprite;
 
     public BaseCard(Sprite sprite)
     {
         this.sprite = sprite;
 
-        setSize(14, 21);
+        setSize(112, 168);
         reset();
     }
 
@@ -42,7 +43,7 @@ public class BaseCard extends Actor implements Pool.Poolable
 
     @Override
     public void reset() {
-        setPosition(-100,-100);
+        setPosition(-800,-800);
         sprite.setColor(Color.LIGHT_GRAY);
     }
 

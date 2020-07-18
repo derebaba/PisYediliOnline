@@ -11,8 +11,8 @@ import com.pisyedilionline.game.PisYediliOnline;
 
 public abstract class BaseScreen implements Screen {
 
-    static final int WORLD_WIDTH = 160;
-    static final int WORLD_HEIGHT = 90;
+    static final int WORLD_WIDTH = 1280;
+    static final int WORLD_HEIGHT = 720;
 
     public final PisYediliOnline game;
     protected OrthographicCamera camera;

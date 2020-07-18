@@ -29,14 +29,13 @@ public class MainMenuScreen extends BaseScreen
         super(game);
 
         nameField = new TextField("", game.skin);
-        nameField.setSize(50, 20);
-        nameField.setPosition(50, 60);
+        nameField.setSize(400, 160);
+        nameField.setPosition(400, 480);
         stage.addActor(nameField);
 
         findMatchButton = new TextButton("Find a Match", game.skin);
-        findMatchButton.setSize(50, 20);
-        findMatchButton.setPosition(50, 40);
-        findMatchButton.getLabel().setFontScale(0.1f);
+        findMatchButton.setSize(400, 160);
+        findMatchButton.setPosition(400, 320);
         findMatchButton.addListener(new ClickListener()
         {
             @Override
@@ -114,7 +113,7 @@ public class MainMenuScreen extends BaseScreen
             game.batch.begin();
             game.font.draw(game.batch, "Searching for " + seconds
                             + (seconds < 2? " second" : " seconds"),
-                    40, 40);
+                    320, 320);
             game.batch.end();
             return;
         }

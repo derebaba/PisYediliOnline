@@ -52,7 +52,8 @@ public class PisYediliOnline extends Game {
 		assetManager.load("heart.png", Texture.class);
 		assetManager.load("spade.png", Texture.class);
 		assetManager.load("speech_bubble.png", Texture.class);
-		skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+		skin = new Skin(Gdx.files.internal("skin/plain-james-ui.json"));
+		skin.getFont("font").getData().setScale(2f);
 
         prefs =  Gdx.app.getPreferences("SessionInfo");
 
@@ -60,11 +61,8 @@ public class PisYediliOnline extends Game {
 
 		batch = new SpriteBatch();
 
-		//Use LibGDX's default Arial font.
-		font = new BitmapFont();
-		font.getData().setScale(0.5f);
+		font = skin.getFont("font");
 		font.setColor(Color.WHITE);
-		font.setUseIntegerPositions(false);
 
 		this.setScreen(new SplashScreen(this));
 	}

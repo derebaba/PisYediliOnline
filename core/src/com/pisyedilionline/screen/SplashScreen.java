@@ -24,12 +24,12 @@ public class SplashScreen extends BaseScreen
         super.render(delta);
 
         game.batch.begin();
-        game.font.draw(game.batch, "Pis Yedili - 7", 10, 50);
-        game.font.draw(game.batch, "Yukleniyor", 10, 20);
+        game.font.draw(game.batch, "Pis Yedili - 7", 80, 400);
+        game.font.draw(game.batch, "Yukleniyor", 80, 160);
 
         // display loading information
         float progress = game.assetManager.getProgress();
-        game.font.draw(game.batch, Float.toString(progress), 100, 20);
+        game.font.draw(game.batch, Float.toString(progress), 800, 160);
         game.batch.end();
     }
 
