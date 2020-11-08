@@ -75,6 +75,10 @@ public class PisClientListener implements SocketListener
         game.logger.info("Received message with opCode " + opCode);
         game.logger.info("Message data: " + data);
 
+        UserPresence senderPresence = matchData.getPresence();
+        if (senderPresence != null)
+            game.logger.info("Sender username: " + senderPresence.getUsername());
+
         switch (opCode)
         {
             case GAME_INIT:
@@ -130,7 +134,11 @@ public class PisClientListener implements SocketListener
                 break;
 
             case CHAT_RECEIVE:
-
+                ChatMessageServer chatMessageServer = gson.fromJson(data, ChatMessageServer.class);
+                Gdx.app.postRunnable(() ->
+                {
+                    gameScreen.broadcastChatMessage(chatMessageServer, senderPresence.getUsername());
+                });
                 break;
         }
     }

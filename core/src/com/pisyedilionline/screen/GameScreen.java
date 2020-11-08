@@ -108,6 +108,7 @@ public class GameScreen extends BaseScreen
                     BaseCard baseCard = baseCardPool.obtain();
                     player.getCards().addActor(baseCard);
                 }
+                player.setBubbleRotation(180);
 
                 players[player.getDirection()] = player;
                 stage.addActor(player);
@@ -141,6 +142,7 @@ public class GameScreen extends BaseScreen
                     else if (player.getDirection() == (mainPlayer.getDirection() + 2) % message.getPlayers().length)
                     {
                         player.setPosition(NORTH_X, NORTH_Y);
+                        player.setBubbleRotation(180);
                     }
                     else if (player.getDirection() == (mainPlayer.getDirection() + 3) % message.getPlayers().length) {
                         player.setPosition(EAST_X, EAST_Y);
@@ -242,11 +244,11 @@ public class GameScreen extends BaseScreen
             }
         };
 
-        ChatButtons chatButtons = new ChatButtons(game, this);
-        chatButtons.setSize(320, 320);
-        chatButtons.setPosition(0, 0);
-        chatButtons.addButton(14, ChatMessage.REYIZ);
-        stage.addActor(chatButtons);
+        ChatButtonGroup chatButtonGroup = new ChatButtonGroup(game, this);
+        chatButtonGroup.setSize(320, 320);
+        chatButtonGroup.setPosition(0, 0);
+        chatButtonGroup.addButton(14, ChatMessageClient.REYIZ);
+        stage.addActor(chatButtonGroup);
 
         update();
     }
@@ -576,4 +578,18 @@ public class GameScreen extends BaseScreen
     }
 
 
+    public void broadcastChatMessage(ChatMessageServer chatMessageServer, String senderUsername) {
+        ChatMessagePopup popup = new ChatMessagePopup(game, this, chatMessageServer.getText());
+        stage.addActor(popup);
+        for (int i = 0; i < players.length; i++)
+        {
+            if (players[i].getUsername().equals(senderUsername))
+            {
+                popup.setPosition(players[i].getX(), players[i].getY());
+                if (players[i].getX() == NORTH_X && players[i].getY() == NORTH_Y)
+                    popup.rotateBy(180);
+            }
+        }
+        popup.addAction(Actions.delay(10, Actions.removeActor()));
+    }
 }

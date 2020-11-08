@@ -58,9 +58,9 @@ public class Player extends Group
         addActor(cards);
 
         speechBubble = new Image(screen.game.assetManager.get("speech_bubble.png", Texture.class));
-        //addActor(speechBubble); belki sonra ekleriz
+        //addActor(speechBubble);
         speechBubble.setSize(240, 160);
-        speechBubble.setPosition(-80, 160);
+        speechBubble.setPosition(0, 0);
 
         nameLabel.setTouchable(Touchable.disabled);
 		setTransform(true);
@@ -84,5 +84,10 @@ public class Player extends Group
 
     public Group getCards() {
         return cards;
+    }
+
+    public void setBubbleRotation(int degrees)
+    {
+        speechBubble.rotateBy(degrees);
     }
 }

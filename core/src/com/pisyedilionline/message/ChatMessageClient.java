@@ -1,13 +1,13 @@
 package com.pisyedilionline.message;
 
-public class ChatMessage {
+public class ChatMessageClient {
 
     public static final String REYIZ = "reyiz en cok degistirilen karttir.";
 
     private String sender;
     private int messageCode;
 
-    public ChatMessage(int messageCode, String sender)
+    public ChatMessageClient(int messageCode, String sender)
     {
         this.messageCode = messageCode;
         this.sender = sender;

@@ -1,6 +1,5 @@
 package com.pisyedilionline.actor;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -11,17 +10,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.google.gson.Gson;
 import com.pisyedilionline.game.PisYediliOnline;
-import com.pisyedilionline.message.ChatMessage;
+import com.pisyedilionline.message.ChatMessageClient;
 import com.pisyedilionline.message.Opcode;
-import com.pisyedilionline.message.PlayCardMessage;
 import com.pisyedilionline.screen.GameScreen;
 
-public class ChatButtons extends Group {
+public class ChatButtonGroup extends Group {
     private final PisYediliOnline game;
     private final GameScreen gameScreen;
     private final Label title;
 
-    public ChatButtons(final PisYediliOnline game, final GameScreen gameScreen)
+    public ChatButtonGroup(final PisYediliOnline game, final GameScreen gameScreen)
     {
         this.game = game;
         this.gameScreen = gameScreen;
@@ -41,12 +39,13 @@ public class ChatButtons extends Group {
     {
         TextButton button = new TextButton(message, game.skin);
         button.setX(getX());
+        button.getLabel().setFontScale(1f);
         button.addListener(new ClickListener()
         {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
             {
-                ChatMessage message = new ChatMessage(messageCode, gameScreen.getMainPlayer().getUsername());
+                ChatMessageClient message = new ChatMessageClient(messageCode, gameScreen.getMainPlayer().getUsername());
                 game.nakama.getSocket().sendMatchData(game.matchId, Opcode.CHAT_SEND.id, new Gson().toJson(message).getBytes());
                 return true;
             }
