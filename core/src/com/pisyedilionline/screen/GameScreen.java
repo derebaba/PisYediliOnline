@@ -247,6 +247,10 @@ public class GameScreen extends BaseScreen
         ChatButtonGroup chatButtonGroup = new ChatButtonGroup(game, this);
         chatButtonGroup.setSize(320, 320);
         chatButtonGroup.setPosition(0, 0);
+        chatButtonGroup.addButton(1, "As?");
+        chatButtonGroup.addButton(7, "7?");
+        chatButtonGroup.addButton(10, "10?");
+        chatButtonGroup.addButton(11, "Jilet?");
         chatButtonGroup.addButton(14, ChatMessageClient.REYIZ);
         stage.addActor(chatButtonGroup);
 
@@ -587,7 +591,7 @@ public class GameScreen extends BaseScreen
             {
                 popup.setPosition(players[i].getX(), players[i].getY());
                 if (players[i].getX() == NORTH_X && players[i].getY() == NORTH_Y)
-                    popup.rotateBy(180);
+                    popup.rotateBubble(180);
             }
         }
         popup.addAction(Actions.delay(10, Actions.removeActor()));

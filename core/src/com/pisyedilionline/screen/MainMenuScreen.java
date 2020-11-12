@@ -1,6 +1,8 @@
 package com.pisyedilionline.screen;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -8,7 +10,6 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.protobuf.Empty;
 import com.heroiclabs.nakama.MatchmakerTicket;
 import com.pisyedilionline.game.PisYediliOnline;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -17,29 +18,36 @@ import java.util.concurrent.Executors;
 
 public class MainMenuScreen extends BaseScreen
 {
-    private final TextButton findMatchButton;
+    private final TextButton findMatchButton, findRoomButton;
 
     private boolean inMMQueue = false;
     private float deltaCounter = 0;
     private ListenableFuture<MatchmakerTicket> matchmakerTicketListenableFuture;
-    private final TextField nameField;
+
+    private Label nameLabel;
+    private final TextField nameField, roomTextField;
 
     public MainMenuScreen(final PisYediliOnline game)
     {
         super(game);
 
+        nameLabel = new Label("Isim: ", new Label.LabelStyle(game.font, Color.WHITE));
+        nameLabel.setSize(200, 160);
+        nameLabel.setPosition(300, 480);
+        stage.addActor(nameLabel);
+
         nameField = new TextField("", game.skin);
-        nameField.setSize(400, 160);
-        nameField.setPosition(400, 480);
+        nameField.setSize(350, 160);
+        nameField.setPosition(450, 480);
         stage.addActor(nameField);
 
         findMatchButton = new TextButton("Find a Match", game.skin);
         findMatchButton.setSize(400, 160);
-        findMatchButton.setPosition(400, 320);
+        findMatchButton.setPosition(350, 320);
         findMatchButton.addListener(new ClickListener()
         {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button)
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button)
             {
                 if(!inMMQueue){
                     nameField.setDisabled(true);
@@ -84,10 +92,19 @@ public class MainMenuScreen extends BaseScreen
                     nameField.setDisabled(false);
                 }
                 inMMQueue = !inMMQueue;
-                return true;
             }
         });
         stage.addActor(findMatchButton);
+
+        roomTextField = new TextField("", game.skin);
+        roomTextField.setSize(350, 160);
+        roomTextField.setPosition(250, 100);
+        stage.addActor(roomTextField);
+
+        findRoomButton = new TextButton("Ozel odaya katil", game.skin);
+        findRoomButton.setSize(400, 160);
+        findRoomButton.setPosition(600, 100);
+        stage.addActor(findRoomButton);
     }
 
     @Override

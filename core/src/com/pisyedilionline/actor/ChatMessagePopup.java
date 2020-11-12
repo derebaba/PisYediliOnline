@@ -38,4 +38,14 @@ public class ChatMessagePopup extends Group {
         setTouchable(Touchable.disabled);
     }
 
+    public void rotateBubble(float degrees)
+    {
+        bubbleImage.setOrigin(bubbleImage.getWidth() / 2, bubbleImage.getHeight() / 2);
+        bubbleImage.setRotation(degrees);
+        /*
+        setRotation(degrees);
+        label.setOrigin(label.getWidth() / 2, label.getHeight() / 2);
+        label.setRotation(degrees);*/
+    }
+
 }
