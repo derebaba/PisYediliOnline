@@ -17,7 +17,7 @@ public class SplashScreen extends BaseScreen
     @Override
     public void render(float delta) {
         if(game.assetManager.update()) {
-            game.setScreen(new MainMenuScreen(game));
+            game.setScreen(new NameScreen(game));
             dispose();
         }
 

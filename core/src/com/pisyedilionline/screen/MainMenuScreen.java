@@ -10,36 +10,27 @@ import com.google.common.base.Function;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.heroiclabs.nakama.Match;
 import com.heroiclabs.nakama.MatchmakerTicket;
 import com.pisyedilionline.game.PisYediliOnline;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executors;
 
 public class MainMenuScreen extends BaseScreen
 {
-    private final TextButton findMatchButton, findRoomButton;
+    private final TextButton findMatchButton, createRoomButton, findRoomButton;
 
     private boolean inMMQueue = false;
     private float deltaCounter = 0;
     private ListenableFuture<MatchmakerTicket> matchmakerTicketListenableFuture;
 
-    private Label nameLabel;
-    private final TextField nameField, roomTextField;
+    private final TextField roomTextField;
 
     public MainMenuScreen(final PisYediliOnline game)
     {
         super(game);
-
-        nameLabel = new Label("Isim: ", new Label.LabelStyle(game.font, Color.WHITE));
-        nameLabel.setSize(200, 160);
-        nameLabel.setPosition(300, 480);
-        stage.addActor(nameLabel);
-
-        nameField = new TextField("", game.skin);
-        nameField.setSize(350, 160);
-        nameField.setPosition(450, 480);
-        stage.addActor(nameField);
 
         findMatchButton = new TextButton("Find a Match", game.skin);
         findMatchButton.setSize(400, 160);
@@ -50,31 +41,19 @@ public class MainMenuScreen extends BaseScreen
             public void touchUp(InputEvent event, float x, float y, int pointer, int button)
             {
                 if(!inMMQueue){
-                    nameField.setDisabled(true);
-                    ListenableFuture<Void> connect = game.nakama.start(nameField.getText());
+                    String query = "*";
+                    int minCount = 2;
+                    int maxCount = 2;
+                    matchmakerTicketListenableFuture = game.nakama.getSocket().addMatchmaker(minCount, maxCount, query);
 
-                    FutureCallback<Void> addMatchmaker = new FutureCallback<Void>() {
-                        @Override
-                        public void onSuccess(@NullableDecl Void aVoid) {
-                            String query = "*";
-                            int minCount = 2;
-                            int maxCount = 2;
-                            matchmakerTicketListenableFuture = game.nakama.getSocket().addMatchmaker(minCount, maxCount, query);
+                    game.logger.info("Started matchmaking...");
 
-                            game.logger.info("Started matchmaking...");
+                    findMatchButton.setText("Abort Search");
 
-                            findMatchButton.setText("Abort Search");
+                    deltaCounter = 0;
 
-                            deltaCounter = 0;
-                        }
 
-                        @Override
-                        public void onFailure(Throwable throwable) {
-
-                        }
-                    };
-
-                    Futures.addCallback(connect, addMatchmaker, Executors.newSingleThreadExecutor());
+                    Futures.addCallback(matchmakerTicketListenableFuture, null, Executors.newSingleThreadExecutor());
                 }
                 else{
 
@@ -89,7 +68,6 @@ public class MainMenuScreen extends BaseScreen
                     Futures.transform(matchmakerTicketListenableFuture, assignMatchmakerQueue, Executors.newSingleThreadExecutor());
 
                     findMatchButton.setText("Find a Match");
-                    nameField.setDisabled(false);
                 }
                 inMMQueue = !inMMQueue;
             }
@@ -102,9 +80,44 @@ public class MainMenuScreen extends BaseScreen
         stage.addActor(roomTextField);
 
         findRoomButton = new TextButton("Ozel odaya katil", game.skin);
-        findRoomButton.setSize(400, 160);
-        findRoomButton.setPosition(600, 100);
+        findRoomButton.setSize(400, 100);
+        findRoomButton.setPosition(600, 150);
+        findRoomButton.addListener(new ClickListener()
+        {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button)
+            {
+
+            }
+        });
         stage.addActor(findRoomButton);
+
+        createRoomButton = new TextButton("Ozel oda olustur", game.skin);
+        createRoomButton.setSize(400, 100);
+        createRoomButton.setPosition(600, 50);
+        createRoomButton.addListener(new ClickListener()
+        {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button)
+            {
+                ListenableFuture<Match> createMatch = game.nakama.getSocket().createMatch();
+
+                FutureCallback<Match> createMatchCallback = new FutureCallback<Match>() {
+                    @Override
+                    public void onSuccess(@Nullable Match match) {
+                        game.logger.info("Oyun oluşturuldu. Match ID: " + match.getMatchId());
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+
+                    }
+                };
+
+                Futures.addCallback(createMatch, createMatchCallback, Executors.newSingleThreadExecutor());
+            }
+        });
+        stage.addActor(createRoomButton);
     }
 
     @Override
